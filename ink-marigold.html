@@ -67,6 +67,15 @@ section{padding:160px 0;min-height:600px;text-align:center;position:relative;scr
   font-family:"Italiana",serif;font-size:36px;letter-spacing:.12em;color:#2A1B05;
   box-shadow:0 14px 40px rgba(0,0,0,.55), inset 0 2px 6px rgba(255,255,255,.35);
 }
+.env{width:100%;max-width:900px;height:auto;display:block;margin:0 auto 40px}
+
+/* Press-to-open. Deliberately matched to what Canva Sites can actually do with a page
+   transition, so the demo does not promise motion the delivered template cannot make. */
+.env{transform-origin:50% 62%;transition:transform .9s cubic-bezier(.2,.8,.25,1),opacity .7s ease}
+#envelope .col:hover .env{transform:scale(1.035) translateY(-8px)}
+#envelope.opening .env{transform:scale(1.55) translateY(-16%);opacity:0}
+#envelope.opening .names,#envelope.opening .label,#envelope.opening .open{opacity:0;transition:opacity .45s ease}
+@media (prefers-reduced-motion:reduce){.env,#envelope.opening .env{transition:none}}
 .open{
   display:inline-block;margin-top:56px;padding:18px 44px;
   border:1px solid var(--marigold);color:var(--marigold-lift);
@@ -182,7 +191,44 @@ footer{padding:90px 0 70px;text-align:center;border-top:1px solid rgba(242,235,2
 <!-- ============ PAGE 0 — ENVELOPE ============ -->
 <section id="envelope">
   <div class="col" style="position:relative;z-index:1">
-    <div class="seal">E&nbsp;R</div>
+    <svg class="env" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A sealed wedding envelope">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0%" stop-color="#F6F0E4"/><stop offset="55%" stop-color="#EFE7D7"/>
+      <stop offset="100%" stop-color="#E3D9C6"/>
+    </linearGradient>
+    <linearGradient id="flap" x1="0.2" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#F8F3E9"/><stop offset="100%" stop-color="#E7DECB"/>
+    </linearGradient>
+    <radialGradient id="wax" cx="36%" cy="30%">
+      <stop offset="0%" stop-color="#E7BC6E"/><stop offset="62%" stop-color="#C98A2B"/>
+      <stop offset="100%" stop-color="#8C5C15"/>
+    </radialGradient>
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="26" stdDeviation="30" flood-color="#05060C" flood-opacity="0.62"/>
+    </filter>
+  </defs>
+
+  <!-- body -->
+  <g filter="url(#lift)">
+    <rect x="60" y="70" width="780" height="480" rx="8" fill="url(#paper)"/>
+  </g>
+  <!-- side seams, drawn as the paper folds a real envelope has -->
+  <path d="M60 70 L450 372 L840 70" fill="none" stroke="#CFC2A8" stroke-width="1.6"/>
+  <path d="M60 550 L392 330" fill="none" stroke="#D6CAB2" stroke-width="1.4"/>
+  <path d="M840 550 L508 330" fill="none" stroke="#D6CAB2" stroke-width="1.4"/>
+  <!-- closed top flap -->
+  <path d="M60 70 L450 372 L840 70 Z" fill="url(#flap)" stroke="#CFC2A8" stroke-width="1.6"/>
+
+  <!-- wax seal on the flap join -->
+  <g>
+    <circle cx="450" cy="372" r="76" fill="url(#wax)"/>
+    <circle cx="450" cy="372" r="76" fill="none" stroke="#7A4E10" stroke-width="2" opacity="0.55"/>
+    <circle cx="450" cy="372" r="62" fill="none" stroke="#7A4E10" stroke-width="1.2" opacity="0.42"/>
+    <text x="450" y="392" text-anchor="middle" font-family="Marcellus, serif" font-size="46"
+          letter-spacing="6" fill="#2E1E06">ER</text>
+  </g>
+</svg>
     <p class="names">Elena<br>&amp; Rohan</p>
     <div class="rule" style="margin:38px auto"></div>
     <p class="label">14 February 2027 &middot; Udaipur, India</p>
@@ -399,5 +445,14 @@ footer{padding:90px 0 70px;text-align:center;border-top:1px solid rgba(242,235,2
   </div>
 </footer>
 
+<script>
+document.querySelector('.open')?.addEventListener('click', e => {
+  const sec = document.getElementById('envelope');
+  if (!sec) return;
+  e.preventDefault();
+  sec.classList.add('opening');
+  setTimeout(() => { location.hash = '#invitation'; }, 620);
+});
+</script>
 </body>
 </html>
