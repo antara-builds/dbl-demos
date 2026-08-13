@@ -87,7 +87,16 @@ body{background:var(--ink);color:var(--ivory);font-family:"EB Garamond",Georgia,
 #site{opacity:0;transition:opacity 1.1s ease}
 #site.in{opacity:1}
 .col{width:min(680px,90vw);margin:0 auto}
-section{padding:88px 0;text-align:center}
+section{padding:88px 0;text-align:center;position:relative;overflow:hidden}
+section .col{position:relative;z-index:3}
+.plate{position:absolute;inset:0;z-index:0}
+.plate img{position:absolute;left:0;top:-9%;width:100%;height:118%;object-fit:cover;will-change:transform}
+.plate .scrim{position:absolute;inset:0}
+.sc-hero{background:linear-gradient(180deg,rgba(23,26,46,.66),rgba(23,26,46,.5) 42%,rgba(23,26,46,.74))}
+.sc-events{background:radial-gradient(78% 66% at 50% 44%, rgba(23,26,46,.30), rgba(23,26,46,.60))}
+.sc-rsvp{background:linear-gradient(180deg,rgba(242,235,221,.55),rgba(242,235,221,.38) 60%,rgba(242,235,221,.62))}
+#amb{position:fixed;inset:0;z-index:20;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#amb{display:none}.plate img{transform:none!important}}
 .label{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.3em;
   font-size:14px;color:var(--ivory-dim)}
 .script{font-family:"Allura",cursive;font-size:64px;line-height:1;color:var(--accent)}
@@ -205,7 +214,8 @@ body.editing #runway,body.editing #scroll-hint{display:none}
 </div>
 
 <main id="site" hidden>
-  <section id="hero">
+  <section id="hero" class="hasplate">
+    <div class="plate" aria-hidden="true"><img src="https://antara-builds.github.io/dbl-demos/ink-envelope-bg.jpg" alt=""><div class="scrim sc-hero"></div></div>
     <div class="col stack">
       <p class="label" data-bind="tagline"></p>
       <h1 class="names" data-bind="names"></h1>
@@ -223,7 +233,8 @@ body.editing #runway,body.editing #scroll-hint{display:none}
     </div>
   </section>
 
-  <section id="events">
+  <section id="events" class="hasplate">
+    <div class="plate" aria-hidden="true"><img src="https://antara-builds.github.io/dbl-demos/ink-courtyard-bg.jpg" alt=""><div class="scrim sc-events"></div></div>
     <div class="col blocks">
       <div class="stack"><p class="script">The Celebrations</p><div class="rule"></div></div>
       <table class="tl"><tbody id="tl-body"></tbody></table>
@@ -246,7 +257,8 @@ body.editing #runway,body.editing #scroll-hint{display:none}
     </div>
   </section>
 
-  <section id="rsvp">
+  <section id="rsvp" class="hasplate">
+    <div class="plate" aria-hidden="true"><img src="https://antara-builds.github.io/dbl-demos/ink-paper-bg.jpg" alt=""><div class="scrim sc-rsvp"></div></div>
     <div class="col stack">
       <p class="script">Kindly Reply</p>
       <div class="rule"></div>
@@ -365,6 +377,7 @@ function fit(){
 addEventListener('resize', fit); fit();
 
 function reveal(){
+  initAmbience(); requestAnimationFrame(parallax);
   stage.classList.add('done');
   const site = $('#site');
   site.hidden = false;
@@ -771,6 +784,53 @@ function bake(){
   a.click();
 }
 
+/* ---------- depth: plates dolly against the scroll ---------- */
+function parallax(){
+  document.querySelectorAll('.plate img').forEach(img => {
+    const r = img.closest('section').getBoundingClientRect();
+    if (r.bottom < -80 || r.top > innerHeight + 80) return;
+    const pr = (r.top + r.height/2 - innerHeight/2) / (innerHeight + r.height);
+    img.style.transform = `translateY(${(pr*12).toFixed(2)}%) scale(1.1)`;
+  });
+}
+let pTick = false;
+addEventListener('scroll', () => {
+  if (pTick) return; pTick = true;
+  requestAnimationFrame(() => { parallax(); pTick = false; });
+}, {passive:true});
+addEventListener('resize', parallax);
+
+/* ---------- ambience: a few marigold petals drifting over the site ---------- */
+function initAmbience(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const a = document.createElement('canvas'); a.id = 'amb';
+  document.body.appendChild(a);
+  const x = a.getContext('2d');
+  let aw, ah;
+  const fitA = () => { aw = a.width = innerWidth; ah = a.height = innerHeight; };
+  fitA(); addEventListener('resize', fitA);
+  const pts = Array.from({length:10}, (_,i) => ({
+    x: Math.random(), y: Math.random(), z: 0.35 + Math.random()*0.65,
+    ph: Math.random()*6.28, vr: (Math.random()-0.5)*1.6, r: Math.random()*6.28 }));
+  (function tick(){
+    x.clearRect(0,0,aw,ah);
+    const t = performance.now()/1000;
+    for (const p of pts){
+      const px = (p.x + Math.sin(t*0.22 + p.ph)*0.05) * aw;
+      const py = ((p.y + t*0.014*p.z) % 1.08 - 0.04) * ah;
+      const sz = (3.4 + p.z*4.6);
+      x.save(); x.translate(px, py); x.rotate(p.r + t*p.vr*0.5);
+      x.globalAlpha = 0.28 + p.z*0.2;
+      x.fillStyle = `hsl(${30+p.z*12} 70% ${50+p.z*6}%)`;
+      x.beginPath(); x.moveTo(0,-sz);
+      x.quadraticCurveTo(sz*0.85,-sz*0.15,0,sz);
+      x.quadraticCurveTo(-sz*0.85,-sz*0.15,0,-sz);
+      x.fill(); x.restore();
+    }
+    requestAnimationFrame(tick);
+  })();
+}
+
 /* ---------- boot ---------- */
 render();
 initReveals();
@@ -780,7 +840,7 @@ if (matchMedia('(prefers-reduced-motion: reduce)').matches || Q.has('skip')){
 } else if (Q.has('edit') || location.hash === '#edit'){
   buildEditor();
 } else if (mode === 'scroll'){
-  initScroll();
+  initScroll(); initAmbience(); parallax();
 } else if (Q.has('auto')){
   start();
 }
