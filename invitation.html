@@ -21,6 +21,7 @@
  "city": "Udaipur, India",
  "welcome": "As we begin this next chapter, it would mean everything to have you beside us. Everything you need is here — the schedule, the venues, where to stay, and how to let us know you are coming. Come hungry. Stay late.",
  "opening": "knot",
+ "openingMode": "scroll",
  "palette": { "ink": "#171A2E", "ivory": "#F2EBDD", "accent": "#C98A2B" },
  "events": [
   {"label":"Mehendi","date":"10 Feb","time":"4:00 pm","venue":"Courtyard, Hotel Amet Haveli","note":"henna, chai and far too much noise"},
@@ -174,7 +175,21 @@ body.editing #stage{display:none}
 body.editing #site{opacity:1}
 @media(min-width:900px){body.editing #site{margin-right:430px}}
 
-@media (prefers-reduced-motion:reduce){#stage{display:none}#site{opacity:1}}
+#runway{pointer-events:none}
+#stage.scrub{pointer-events:none}
+#stage.scrub #invite-hint{display:none}
+#scroll-hint{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:41;
+  text-align:center;font-family:"Marcellus",serif;letter-spacing:.3em;font-size:12px;
+  text-transform:uppercase;color:var(--ivory-dim);transition:opacity .6s;pointer-events:none}
+#scroll-hint.off{opacity:0}
+#scroll-hint::after{content:"";display:block;width:1px;height:34px;margin:10px auto 0;
+  background:linear-gradient(var(--accent),transparent);animation:drip 1.8s ease infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}60%{transform:scaleY(1)}100%{opacity:0}}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+body.editing #runway,body.editing #scroll-hint{display:none}
+@media (prefers-reduced-motion:reduce){#stage{display:none}#site{opacity:1}
+  .rv{opacity:1;transform:none;transition:none}}
 </style>
 <noscript><style>#stage{display:none}#site[hidden]{display:block}#site{opacity:1}</style></noscript>
 </head>
@@ -358,28 +373,29 @@ function reveal(){
   setTimeout(() => { stage.style.display = 'none'; }, 1100);
 }
 
-/* ================= opening 1 — THE KNOT =================
-   Two silk threads drift in, entwine, and settle into a knot
-   that carries the monogram. */
-function runKnot(done){
-  const DUR = 7.2, cx = W/2, cy = H*0.42;
-  const A = [], B = [], MAX = 110;
-  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#C98A2B';
-  const ivory  = getComputedStyle(document.documentElement).getPropertyValue('--ivory').trim() || '#F2EBDD';
-  let t0;
-  function head(t, side){          // side: -1 thread A (left), +1 thread B (right)
-    if (t < 2.1){                  // drift in on a sine wave
-      const p = t/2.1, ease = p*p*(3-2*p);
+/* ================= the three openings =================
+   Each factory returns {dur, draw(t)} where draw is a PURE function of t.
+   One code path serves both drivers: tap-to-play advances t on a clock,
+   scroll mode binds t to the scrollbar — forwards and backwards. */
+
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function makeKnot(){
+  const dur = 7.2, cx = W/2, cy = H*0.42, K = 70;
+  const accent = css('--accent') || '#C98A2B', ivory = css('--ivory') || '#F2EBDD';
+  function head(t, side){
+    if (t < 2.1){
+      const p = Math.max(0, t/2.1), ease = p*p*(3-2*p);
       const x = side < 0 ? -40 + (cx+40)*ease : W+40 - (W-cx+40)*ease;
       const y = cy + side*44 + Math.sin(p*Math.PI*3 + (side<0?0:1.4))*H*0.06*(1-p*0.5);
       return {x, y};
     }
-    const tt = t - 2.1;            // entwine: shrinking helix
+    const tt = t - 2.1;
     const r  = Math.max(52, 150 - tt*34);
     const a  = tt*3.1 + (side<0 ? 0 : Math.PI);
     return {x: cx + r*Math.cos(a), y: cy + r*0.62*Math.sin(a)};
   }
-  function rosette(prog){          // the settled knot
+  function rosette(prog){
     ctx.beginPath();
     const n = Math.floor(150*prog);
     for (let i = 0; i <= n; i++){
@@ -390,30 +406,31 @@ function runKnot(done){
     }
     ctx.stroke();
   }
-  function trail(pts, col){
-    if (pts.length < 2) return;
+  function trail(t, side, col, fade){
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    for (let i = 1; i < pts.length; i++){
-      const a = i/pts.length;
-      ctx.strokeStyle = col; ctx.globalAlpha = a*0.9;
-      ctx.lineWidth = 1.1 + a*2.1;
-      ctx.beginPath(); ctx.moveTo(pts[i-1].x, pts[i-1].y); ctx.lineTo(pts[i].x, pts[i].y); ctx.stroke();
+    let prev = null;
+    for (let i = K; i >= 0; i--){        // the trail is the head's own past, recomputed
+      const ti = t - i*0.02;
+      if (ti < 0){prev = null; continue;}
+      const q = head(ti, side);
+      if (prev){
+        const a = (1 - i/K)*0.9*fade;
+        ctx.strokeStyle = col; ctx.globalAlpha = a;
+        ctx.lineWidth = 1.1 + (1-i/K)*2.1;
+        ctx.beginPath(); ctx.moveTo(prev.x, prev.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+      }
+      prev = q;
     }
     ctx.globalAlpha = 1;
   }
-  function frame(now){
-    if (!t0) t0 = now - (parseFloat(Q.get('at'))||0)*1000;
-    const t = (now - t0)/1000;
+  function draw(t){
     ctx.clearRect(0,0,W,H);
     const knotP = Math.min(1, Math.max(0, (t-4.4)/1.4));
-    if (t < 5.2){
-      A.push(head(t,-1)); B.push(head(t,+1));
-      if (A.length > MAX){A.shift(); B.shift();}
-    }
     ctx.shadowColor = accent; ctx.shadowBlur = 14;
-    ctx.globalAlpha = 1 - knotP*0.85;
-    trail(A, accent); trail(B, ivory);
-    ctx.globalAlpha = 1;
+    if (t < 5.4){
+      trail(Math.min(t,5.2), -1, accent, 1-knotP*0.85);
+      trail(Math.min(t,5.2), +1, ivory, 1-knotP*0.85);
+    }
     if (knotP > 0){
       ctx.strokeStyle = accent; ctx.lineWidth = 2.4;
       ctx.shadowBlur = 18; rosette(knotP);
@@ -433,22 +450,16 @@ function runKnot(done){
       ctx.globalAlpha = 1;
     }
     ctx.shadowBlur = 0;
-    if (t >= DUR) return done();
-    raf = requestAnimationFrame(frame);
   }
-  raf = requestAnimationFrame(frame);
+  return {dur, draw};
 }
 
-/* ================= opening 2 — WRITTEN IN THE STARS =================
-   The couple's initials are sampled to points; stars brighten and a
-   constellation line traces them, with the date beneath. */
-function runStars(done){
-  const DUR = 8.0;
+function makeStars(){
+  const dur = 8.0;
   const bg = Array.from({length:130}, () => ({
     x: Math.random()*W, y: Math.random()*H,
     r: 0.5 + Math.random()*1.3, ph: Math.random()*Math.PI*2, in: Math.random()*1.8 }));
   let pts = samplePoints(cfg.initials, 190, 'Marcellus, serif', 13);
-  // chain them nearest-neighbour so a line can be traced
   const chain = [];
   if (pts.length){
     let cur = pts.reduce((m,p) => p.x < m.x ? p : m, pts[0]);
@@ -464,13 +475,10 @@ function runStars(done){
   }
   const bw = Math.min(W*0.86, 640), bh = bw*360/1400;
   const map = p => ({x: W/2 + (p.x-0.5)*bw, y: H*0.40 + (p.y-0.5)*bh});
-  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#C98A2B';
-  let t0;
-  function frame(now){
-    if (!t0) t0 = now - (parseFloat(Q.get('at'))||0)*1000;
-    const t = (now - t0)/1000;
+  const accent = css('--accent') || '#C98A2B';
+  function draw(t){
     ctx.clearRect(0,0,W,H);
-    for (const s of bg){                                  // sky
+    for (const s of bg){
       if (t < s.in) continue;
       const a = Math.min(1,(t-s.in)/1.2) * (0.35 + 0.3*Math.sin(t*1.7 + s.ph));
       ctx.globalAlpha = Math.max(0.06, a);
@@ -479,8 +487,8 @@ function runStars(done){
     }
     ctx.globalAlpha = 1;
     const n = chain.length;
-    const popP  = Math.min(1, Math.max(0, (t-1.6)/2.2));   // stars pop
-    const lineP = Math.min(1, Math.max(0, (t-2.6)/2.6));   // line traces
+    const popP  = Math.min(1, Math.max(0, (t-1.6)/2.2));
+    const lineP = Math.min(1, Math.max(0, (t-2.6)/2.6));
     const lit = Math.floor(n*popP);
     if (lineP > 0 && n > 1){
       ctx.strokeStyle = 'rgba(224,177,95,.5)'; ctx.lineWidth = 1;
@@ -496,13 +504,13 @@ function runStars(done){
     for (let i = 0; i < lit; i++){
       const q = map(chain[i]);
       const born = 1.6 + (i/n)*2.2, ag = t - born;
-      const flash = ag < 0.45 ? 1 + (0.45-ag)*4 : 1;
+      const flash = ag < 0.45 && ag > 0 ? 1 + (0.45-ag)*4 : 1;
       ctx.shadowBlur = 10;
       ctx.fillStyle = '#F5EEDE';
       ctx.beginPath(); ctx.arc(q.x, q.y, 1.5*flash, 0, 7); ctx.fill();
     }
     ctx.shadowBlur = 0;
-    const dP = Math.min(1, Math.max(0, (t-5.6)/1.0));      // the date, written beneath
+    const dP = Math.min(1, Math.max(0, (t-5.6)/1.0));
     if (dP > 0){
       ctx.globalAlpha = dP; ctx.fillStyle = accent;
       ctx.font = '15px Marcellus, serif';
@@ -510,18 +518,12 @@ function runStars(done){
       ctx.fillText(((cfg.dateLine||'') + '  ·  ' + (cfg.city||'')).toUpperCase(), W/2, H*0.40 + bh/2 + 64);
       ctx.globalAlpha = 1;
     }
-    if (t >= DUR) return done();
-    raf = requestAnimationFrame(frame);
   }
-  raf = requestAnimationFrame(frame);
+  return {dur, draw};
 }
 
-/* ================= opening 3 — MARIGOLD RAIN =================
-   Petals fall, gather into the couple's names, hold, and scatter. */
-function runPetals(done){
-  const DUR = 7.5;
-  // On a phone the mapped text box is ~350px wide; full names in a thin script smear.
-  // Small screens gather into the initials in Marcellus, whose strokes survive the scale.
+function makePetals(){
+  const dur = 7.5, G0 = 2.0, GD = 1.5, B0 = 5.7;
   const useInitials = W < 640;
   let targets = useInitials
     ? samplePoints(cfg.initials, 300, 'Marcellus, serif', 6)
@@ -532,83 +534,135 @@ function runPetals(done){
   const map = p => ({x: W/2 + (p.x-0.5)*bw, y: H*0.42 + (p.y-0.5)*bh});
   const P = Array.from({length:N}, (_, i) => {
     const z = 0.4 + Math.random()*0.6;
-    return { x: Math.random()*W, y: Math.random()*H*1.5 - H*0.45, z,
-      vx: 0, vy: (72+Math.random()*96)*z, sway: Math.random()*Math.PI*2,
-      rot: Math.random()*Math.PI*2, vr: (Math.random()-0.5)*2.4,
+    return { x0: Math.random()*W, y0: Math.random()*H*1.5 - H*0.45, z,
+      vy: (72+Math.random()*96)*z, sway0: Math.random()*Math.PI*2,
+      rot0: Math.random()*Math.PI*2, vr: (Math.random()-0.5)*2.4,
       s: (5+Math.random()*8)*z, hue: 28 + Math.random()*16,
       tgt: targets.length ? map(targets[i % targets.length]) : null,
       bx: (Math.random()-0.5)*340, by: (Math.random()-0.5)*300 };
   });
-  function petal(x, y, r, s, hue, a){
+  const span = H + 60;
+  const rain = (p, t) => ({
+    x: p.x0 + Math.sin(p.sway0 + t*1.8)*26*p.z,
+    y: ((p.y0 + p.vy*t) % span + span) % span - 30,
+    r: p.rot0 + p.vr*t });
+  function petal(x, y, r, sz, hue, a){
+    if (a <= 0) return;
     ctx.save(); ctx.translate(x,y); ctx.rotate(r);
     ctx.globalAlpha = a;
-    ctx.fillStyle = `hsl(${hue} 72% ${46 + s}%)`;
+    ctx.fillStyle = `hsl(${hue} 72% ${46 + sz}%)`;
     ctx.beginPath();
-    ctx.moveTo(0,-s);
-    ctx.quadraticCurveTo(s*0.85, -s*0.15, 0, s);
-    ctx.quadraticCurveTo(-s*0.85, -s*0.15, 0, -s);
+    ctx.moveTo(0,-sz);
+    ctx.quadraticCurveTo(sz*0.85, -sz*0.15, 0, sz);
+    ctx.quadraticCurveTo(-sz*0.85, -sz*0.15, 0, -sz);
     ctx.fill(); ctx.restore();
   }
-  let t0, last;
-  function frame(now){
-    if (!t0){t0 = now - (parseFloat(Q.get('at'))||0)*1000; last = now;}
-    const t  = (now - t0)/1000;
-    const dt = Math.min(0.05, (now-last)/1000); last = now;
+  function draw(t){
     ctx.clearRect(0,0,W,H);
-    const gather  = t > 2.0 && t < 5.6;
-    const burst   = t >= 5.7;
-    const holdEnd = Math.min(1, Math.max(0,(t-5.7)/1.3));
+    const gE = t > G0 ? (q => q*q*(3-2*q))(Math.min(1,(t-G0)/GD)) : 0;
+    const holdEnd = Math.min(1, Math.max(0,(t-B0)/1.3));
     for (const p of P){
-      if (burst && p.tgt){
-        // deterministic in t: frame-integrated motion stalls when rAF is throttled
-        const bt = t - 5.7;
-        p.x = p.tgt.x + p.bx*bt*1.6; p.y = p.tgt.y + p.by*bt*1.6 + 60*bt*bt;
-        p.rot += p.vr*dt*3;
-      } else if (gather && p.tgt){
-        if (p.gx === undefined){p.gx = p.x; p.gy = p.y;}
-        const gp = Math.min(1,(t-2.0)/1.5), e = gp*gp*(3-2*gp);
-        p.x = p.gx + (p.tgt.x-p.gx)*e; p.y = p.gy + (p.tgt.y-p.gy)*e;
-        p.rot += p.vr*dt*0.6;
+      let x, y, r;
+      if (t >= B0 && p.tgt){
+        const bt = t - B0;
+        x = p.tgt.x + p.bx*bt*1.6; y = p.tgt.y + p.by*bt*1.6 + 60*bt*bt;
+        r = p.rot0 + p.vr*(G0 + bt*3);
+      } else if (t > G0 && p.tgt){
+        const g = rain(p, G0);
+        x = g.x + (p.tgt.x-g.x)*gE; y = g.y + (p.tgt.y-g.y)*gE;
+        r = p.rot0 + p.vr*G0 + p.vr*(t-G0)*0.6;
       } else {
-        p.sway += dt*1.8;
-        p.x += Math.sin(p.sway)*24*dt*p.z; p.y += p.vy*dt;
-        p.rot += p.vr*dt;
-        if (p.y > H+30){p.y = -30; p.x = Math.random()*W;}
+        const q = rain(p, t); x = q.x; y = q.y; r = q.r;
       }
-      const gE = (p.tgt && t > 2.0) ? Math.min(1,(t-2.0)/1.5) : 0;
-      petal(p.x, p.y, p.rot, p.s*(1 - gE*0.5), p.hue, (0.5 + p.z*0.5)*(1-holdEnd));
+      petal(x, y, r, p.s*(1 - gE*0.5), p.hue, (0.5 + p.z*0.5)*(1-holdEnd));
     }
-    if (t >= DUR) return done();
-    raf = requestAnimationFrame(frame);
   }
-  raf = requestAnimationFrame(frame);
+  return {dur, draw};
 }
 
-/* ---------- start / skip ---------- */
-let raf, started = false;
-const OPENINGS = {knot: runKnot, stars: runStars, petals: runPetals};
-async function start(){
-  if (started) return; started = true;
-  stage.classList.add('playing');
-  if (cfg.musicUrl){
-    try {
-      let au = $('#bg-music');
-      if (!au){ au = document.createElement('audio'); au.id='bg-music'; au.loop = true; au.src = cfg.musicUrl; document.body.appendChild(au); }
-      au.play(); $('#music').textContent = '❚❚';
-    } catch(e){}
-  }
+const OPENINGS = {knot: makeKnot, stars: makeStars, petals: makePetals};
+async function fontsReady(){
   try { await Promise.all([
     document.fonts.load('190px Marcellus'), document.fonts.load('150px Allura'),
     document.fonts.ready ]); } catch(e){}
-  (OPENINGS[cfg.opening] || runKnot)(reveal);
+}
+
+/* ---------- driver 1: tap to play ---------- */
+let raf, started = false;
+async function start(){
+  if (started) return; started = true;
+  stage.classList.add('playing');
+  startMusic();
+  await fontsReady();
+  const mod = (OPENINGS[cfg.opening] || makeKnot)();
+  let t0;
+  const step = now => {
+    if (!t0) t0 = now - (parseFloat(Q.get('at'))||0)*1000;
+    const t = (now - t0)/1000;
+    mod.draw(t);
+    if (t >= mod.dur) return reveal();
+    raf = requestAnimationFrame(step);
+  };
+  raf = requestAnimationFrame(step);
 }
 function skipAll(){ cancelAnimationFrame(raf); reveal(); }
+
+/* ---------- driver 2: the scrollbar is the timeline ---------- */
+async function initScroll(){
+  await fontsReady();
+  const mod = (OPENINGS[cfg.opening] || makeKnot)();
+  const runway = document.createElement('div');
+  runway.id = 'runway'; runway.style.height = '320vh';
+  document.body.insertBefore(runway, $('#site'));
+  const hint = document.createElement('div');
+  hint.id = 'scroll-hint'; hint.textContent = 'Scroll to open';
+  document.body.appendChild(hint);
+  stage.classList.add('scrub');
+  $('#site').hidden = false; $('#site').classList.add('in');
+  countdown();
+  let musicArmed = false;
+  addEventListener('touchstart', () => { if(!musicArmed){musicArmed = true; startMusic();} }, {once:true, passive:true});
+  const onScroll = () => {
+    const max = runway.offsetHeight - innerHeight*0.55;
+    const p = Math.min(1, Math.max(0, scrollY/max));
+    mod.draw(p*mod.dur);
+    stage.style.opacity = p < 0.9 ? 1 : Math.max(0, 1-(p-0.9)/0.1);
+    stage.style.visibility = p >= 1 ? 'hidden' : 'visible';
+    hint.classList.toggle('off', scrollY > 40);
+  };
+  addEventListener('scroll', onScroll, {passive:true});
+  addEventListener('resize', onScroll);
+  onScroll();
+}
+
+function startMusic(){
+  if (!cfg.musicUrl) return;
+  try {
+    let au = $('#bg-music');
+    if (!au){ au = document.createElement('audio'); au.id='bg-music'; au.loop = true; au.src = cfg.musicUrl; document.body.appendChild(au); }
+    au.play(); $('#music').textContent = '❚❚';
+  } catch(e){}
+}
 $('#invite-hint').addEventListener('click', start);
 $('#skip').addEventListener('click', skipAll);
 $('#music').addEventListener('click', () => {
   const au = $('#bg-music'); if (!au) return;
   if (au.paused){au.play(); $('#music').textContent='❚❚';} else {au.pause(); $('#music').textContent='♫';}
 });
+
+/* ---------- sections rise as they enter view ---------- */
+function initReveals(){
+  document.querySelectorAll('#site section').forEach(sec => {
+    sec.querySelectorAll('.col > *').forEach((el, i) => {
+      el.classList.add('rv');
+      el.style.transitionDelay = Math.min(i*110, 440) + 'ms';
+    });
+  });
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('in');
+  }), {threshold: 0.12});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+}
 
 /* ---------- editor ---------- */
 function buildEditor(){
@@ -631,10 +685,16 @@ function buildEditor(){
     <div class="row">${F('Date shown', cfg.dateLine, 'dateLine')}${F('City', cfg.city, 'city')}</div>
     ${F('Wedding date & time (for the countdown)', cfg.iso.slice(0,16), 'iso', 'datetime-local')}
     ${F('Welcome note', cfg.welcome, 'welcome', 'area')}
+    <div class="row"><div>
     <label>Opening animation</label>
     <select data-k="opening">
       ${['knot','stars','petals'].map(o => `<option ${cfg.opening===o?'selected':''}>${o}</option>`).join('')}
-    </select>
+    </select></div><div>
+    <label>How it opens</label>
+    <select data-k="openingMode">
+      ${[['scroll','guests scroll it open'],['tap','tap to play']].map(([v,l]) =>
+        `<option value="${v}" ${cfg.openingMode===v?'selected':''}>${l}</option>`).join('')}
+    </select></div></div>
     <fieldset><legend>Events</legend><div id="ev-list">
       ${cfg.events.map((e,i) => `
         <div class="row">${F('Event '+(i+1), e.label, 'events.'+i+'.label')}${F('Date', e.date, 'events.'+i+'.date')}</div>
@@ -698,6 +758,12 @@ function bake(){
   const si = clone.querySelector('#site');
   si.setAttribute('hidden',''); si.className = '';
   clone.querySelector('#bg-music')?.remove();
+  clone.querySelector('#runway')?.remove();
+  clone.querySelector('#scroll-hint')?.remove();
+  st.style.opacity = ''; st.style.visibility = '';
+  clone.querySelectorAll('.rv').forEach(el => {
+    el.classList.remove('rv','in'); el.style.transitionDelay = '';
+  });
   const blob = new Blob(['<!doctype html>\n' + clone.outerHTML], {type:'text/html'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -707,10 +773,14 @@ function bake(){
 
 /* ---------- boot ---------- */
 render();
+initReveals();
+const mode = Q.get('mode') || cfg.openingMode || 'tap';
 if (matchMedia('(prefers-reduced-motion: reduce)').matches || Q.has('skip')){
   skipAll();
 } else if (Q.has('edit') || location.hash === '#edit'){
   buildEditor();
+} else if (mode === 'scroll'){
+  initScroll();
 } else if (Q.has('auto')){
   start();
 }
