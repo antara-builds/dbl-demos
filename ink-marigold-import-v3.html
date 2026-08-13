@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ink and Marigold wedding website</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Marcellus&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#171A2E;
+  --ink-raised:#1F2338;
+  --ivory:#F2EBDD;
+  --ivory-dim:#C9C0B0;
+  --marigold:#C98A2B;
+  --marigold-lift:#E0B15F;
+  --clay:#B08268;
+  --col:960px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--ivory);
+  font-family:"EB Garamond",Georgia,serif;
+  font-size:26px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+/* ---- the safe column. Nothing but backgrounds may leave it. ---- */
+.col{width:var(--col);margin:0 auto}
+
+.label{
+  font-family:"Marcellus",serif;
+  text-transform:uppercase;
+  letter-spacing:.30em;
+  font-size:22px;
+  color:var(--ivory-dim);
+}
+.script{font-family:"Allura",cursive;font-size:120px;line-height:.9;color:var(--marigold)}
+.names{font-family:"Marcellus",serif;font-size:96px;line-height:1.15;letter-spacing:.10em}
+.h2{font-family:"Marcellus",serif;font-size:64px;letter-spacing:.06em}
+.body{font-style:italic}
+.cap{font-size:20px;color:var(--ivory-dim);font-style:normal}
+.rule{width:96px;height:1px;background:var(--marigold);margin:0 auto;opacity:.9}
+
+section{background:var(--ink);padding:160px 0;width:1600px;min-height:2000px;text-align:center;position:relative;display:flex;align-items:center;justify-content:center}
+.blocks>*+*{margin-top:64px}
+.stack>*+*{margin-top:24px}
+
+/* ---- page 0, the envelope ---- */
+#envelope{
+  min-height:2000px;display:flex;align-items:center;justify-content:center;padding:0;
+  background:
+    radial-gradient(120% 90% at 50% 20%, rgba(201,138,43,.16), transparent 60%),
+    linear-gradient(180deg,#0F1120 0%, #171A2E 55%, #10121F 100%);
+}
+#envelope::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(70% 55% at 50% 45%, transparent 40%, rgba(8,9,17,.72) 100%);
+}
+.seal{
+  width:264px;height:264px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%, var(--marigold-lift), #8E5F17 78%);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 64px;
+  font-family:"Marcellus",serif;font-size:78px;letter-spacing:.14em;color:#2A1B05;
+  box-shadow:0 14px 40px rgba(0,0,0,.55), inset 0 2px 6px rgba(255,255,255,.35);
+}
+.open{
+  display:inline-block;margin-top:56px;padding:18px 44px;
+  border:1px solid var(--marigold);color:var(--marigold-lift);
+  font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.30em;font-size:20px;
+  text-decoration:none;transition:background .25s,color .25s;
+}
+.open:hover{background:var(--marigold);color:#1A1204}
+
+/* ---- nav ---- */
+nav{
+  position:sticky;top:0;z-index:20;
+  background:rgba(15,17,32,.90);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(201,138,43,.28);
+  padding:20px 0;
+}
+nav ul{display:flex;gap:38px;justify-content:center;list-style:none;flex-wrap:wrap}
+nav a{
+  font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.24em;font-size:17px;
+  color:var(--ivory-dim);text-decoration:none;padding-bottom:6px;border-bottom:1px solid transparent;
+}
+nav a:hover,nav a.on{color:var(--ivory);border-bottom-color:var(--marigold)}
+
+/* ---- countdown ---- */
+.count{display:flex;gap:44px;justify-content:center}
+.count div{min-width:104px}
+.count b{
+  display:block;font-family:"Marcellus",serif;font-weight:400;font-size:72px;
+  color:var(--marigold);font-variant-numeric:tabular-nums;line-height:1
+}
+.count span{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.26em;font-size:15px;color:var(--ivory-dim)}
+
+/* ---- timeline ---- */
+.tl{width:100%;border-collapse:collapse;text-align:left}
+.tl td{padding:26px 24px 26px 0;border-bottom:1px solid rgba(242,235,221,.13);vertical-align:middle}
+.tl tr:last-child td{border-bottom:0}
+.tl td.ic{width:110px}
+.tl td.dt{width:150px;white-space:nowrap}
+.tl time{font-family:"Marcellus",serif;letter-spacing:.14em;font-size:20px;color:var(--marigold-lift)}
+.tl h4{font-family:"Marcellus",serif;font-weight:400;font-size:32px;letter-spacing:.05em}
+.tl p{font-size:21px;color:var(--ivory-dim);font-style:italic}
+.icon{width:76px;height:76px;stroke:var(--marigold);fill:none;stroke-width:1.15;opacity:.95}
+
+/* ---- hotel + qa cards ---- */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:36px;text-align:left}
+.card{border:1px solid rgba(242,235,221,.18);padding:34px 32px}
+.card h4{font-family:"Marcellus",serif;font-weight:400;font-size:34px;margin-bottom:14px}
+.card p{font-size:21px;color:var(--ivory-dim);font-style:normal;line-height:1.5}
+.card a{color:var(--marigold-lift);font-family:"Marcellus",serif;font-size:16px;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;display:inline-block;margin-top:18px;border-bottom:1px solid rgba(224,177,95,.5)}
+.qa{display:grid;grid-template-columns:1fr 1fr;gap:34px 44px;text-align:left}
+.qa dt{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.2em;font-size:17px;color:var(--marigold-lift);margin-bottom:8px}
+.qa dd{font-size:21px;color:var(--ivory-dim);font-style:italic}
+
+/* ---- the one inverted page ---- */
+#rsvp{background:var(--ivory);color:var(--ink)}
+#rsvp .label{color:#6E6353}
+#rsvp .script{color:var(--clay)}
+#rsvp .rule{background:var(--clay)}
+#rsvp .form{border:1px solid rgba(23,26,46,.22);padding:44px 40px;text-align:left;background:#FBF7EE}
+#rsvp .form p{font-size:21px;color:#4A4437;font-style:normal}
+#rsvp .field{border-bottom:1px solid rgba(23,26,46,.28);padding:16px 0;font-family:"Marcellus",serif;letter-spacing:.16em;text-transform:uppercase;font-size:16px;color:#6E6353}
+#rsvp .deadline{font-family:"Marcellus",serif;font-size:44px;letter-spacing:.06em}
+
+/* ---- story ---- */
+.story{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;text-align:left}
+.story:nth-of-type(even) .ph{order:2}
+.ph{aspect-ratio:4/5;background:
+  repeating-linear-gradient(45deg,rgba(242,235,221,.05) 0 12px,transparent 12px 24px),
+  var(--ink-raised);
+  border:1px solid rgba(242,235,221,.16);display:grid;place-items:center}
+.ph span{font-family:"Marcellus",serif;letter-spacing:.24em;text-transform:uppercase;font-size:15px;color:var(--ivory-dim)}
+.story h3{font-family:"Allura",cursive;font-size:76px;color:var(--marigold);line-height:.95;margin-bottom:14px}
+.story p{font-size:23px;font-style:italic;color:var(--ivory-dim)}
+
+/* ---- save the date ---- */
+#std{background:var(--ink-raised)}
+
+footer{padding:90px 0 70px;text-align:center;border-top:1px solid rgba(242,235,221,.12)}
+
+
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 0 — ENVELOPE ============ -->
+<section id="envelope" data-document-role="page" data-label="Envelope">
+  <div class="col" style="position:relative;z-index:1">
+    <div class="seal">E&nbsp;R</div>
+    <p class="names">Elena<br>&amp; Rohan</p>
+    <div class="rule" style="margin:38px auto"></div>
+    <p class="label">14 February 2027 &middot; Udaipur, India</p>
+    <a class="open" href="#invitation">Open the invitation</a>
+  </div>
+</section>
+
+<!-- nav removed for Canva import: site chrome, not a page -->
+
+<!-- ============ PAGE 1 — INVITATION ============ -->
+<section id="invitation" data-document-role="page" data-label="Invitation">
+  <div class="col blocks">
+    <div class="stack">
+      <p class="label">Together with their families</p>
+      <p class="names">Elena &amp; Rohan</p>
+      <div class="rule"></div>
+      <p class="label">14 February 2027 &middot; The City Palace, Udaipur</p>
+    </div>
+
+    <p class="body">As we begin this next chapter, it would mean everything to have you beside us.
+      Everything you need is here — the schedule, the venues, where to stay, and how to let us know
+      you are coming. Come hungry. Stay late.</p>
+
+    <div class="stack">
+      <p class="label">The countdown is on</p>
+      <div class="count">
+        <div><b>184</b><span>Days</span></div>
+        <div><b>06</b><span>Hours</span></div>
+        <div><b>41</b><span>Minutes</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 2 — THE DETAILS ============ -->
+<section id="details" data-document-role="page" data-label="The Details">
+  <div class="col blocks">
+    <div class="stack">
+      <p class="script">The Details</p>
+      <div class="rule"></div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h4>Ceremony</h4>
+        <p>4:30 pm &middot; 14 February<br>The City Palace, Zenana Mahal<br>Old City, Udaipur 313001</p>
+      </div>
+      <div class="card">
+        <h4>Reception</h4>
+        <p>7:30 pm &middot; 14 February<br>Jagmandir Island, Lake Pichola<br>Boats from Bansi Ghat, 7:00 pm</p>
+      </div>
+    </div>
+
+    <div class="stack">
+      <p class="label">Five days, five invitations</p>
+      <table class="tl"><tbody>
+        <tr><td class="ic"><svg class="icon" viewBox="0 0 48 48"><path d="M24 8c-5 6-9 9-9 15a9 9 0 0018 0c0-6-4-9-9-15z"/><path d="M24 30v10M18 40h12"/></svg></td><td class="dt">10 Feb</td><td class="ev"><h4>Mehendi</h4><p>Courtyard, Hotel Amet Haveli — henna, chai and far too much noise</p></td></tr>
+        <tr><td class="ic"><svg class="icon" viewBox="0 0 48 48"><circle cx="24" cy="22" r="9"/><path d="M24 4v5M24 35v5M6 22h5M37 22h5M11 9l4 4M33 31l4 4M37 9l-4 4M15 31l-4 4"/></svg></td><td class="dt">11 Feb</td><td class="ev"><h4>Haldi</h4><p>Morning, at home — wear something you will never wear again</p></td></tr>
+        <tr><td class="ic"><svg class="icon" viewBox="0 0 48 48"><path d="M16 34a6 6 0 100 8 6 6 0 000-8zM34 30a6 6 0 100 8 6 6 0 000-8z"/><path d="M22 38V12l18-4v26"/></svg></td><td class="dt">12 Feb</td><td class="ev"><h4>Sangeet</h4><p>8:00 pm, Durbar Hall — the dancing starts whether you are ready or not</p></td></tr>
+        <tr><td class="ic"><svg class="icon" viewBox="0 0 48 48"><circle cx="19" cy="26" r="9"/><circle cx="30" cy="26" r="9"/><path d="M19 11l3 5h-6z"/></svg></td><td class="dt">14 Feb</td><td class="ev"><h4>The Ceremony</h4><p>4:30 pm, Zenana Mahal — seated by 4:15, please</p></td></tr>
+        <tr><td class="ic"><svg class="icon" viewBox="0 0 48 48"><path d="M14 20h20l-3 18H17z"/><path d="M18 20c0-6 2-10 6-10s6 4 6 10"/><path d="M12 42h24"/></svg></td><td class="dt">14 Feb</td><td class="ev"><h4>Reception</h4><p>7:30 pm, Jagmandir Island — dinner, speeches, the lake at night</p></td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="stack">
+      <p class="script" style="font-size:88px">Where to Stay</p>
+      <div class="cards" style="margin-top:34px">
+        <div class="card">
+          <h4>Amet Haveli</h4>
+          <p>Outside Chandpole, Lake Pichola<br>6-minute boat to the reception<br>+91 294 243 1085</p>
+          <a href="#">Visit website</a>
+        </div>
+        <div class="card">
+          <h4>Hotel Lakend</h4>
+          <p>Alkapuri, Fateh Sagar Road<br>12 minutes by car to the palace<br>+91 294 243 3006</p>
+          <a href="#">Visit website</a>
+        </div>
+      </div>
+      <p class="cap" style="margin-top:22px">Cars will run between both hotels and every event. Times go
+        out with your RSVP confirmation.</p>
+    </div>
+
+    <div class="stack">
+      <p class="label">What to wear</p>
+      <p class="body">Indian formal if you have it, black tie if you do not, and comfortable shoes for
+        the ceremony either way — the courtyard is uneven stone. February evenings by the lake get
+        genuinely cold, so bring a shawl you like being photographed in.</p>
+    </div>
+
+    <div class="stack">
+      <p class="label">Good to know</p>
+      <dl class="qa" style="margin-top:26px">
+        <div><dt>Arrival</dt><dd>The nearest airport is Maharana Pratap, 30 minutes from the old city.</dd></div>
+        <div><dt>Children</dt><dd>Very welcome at every event except the sangeet.</dd></div>
+        <div><dt>Parking</dt><dd>Free at both hotels. There is none at the palace — take the shuttle.</dd></div>
+        <div><dt>Weather</dt><dd>24°C by day, 11°C after dark. Every year, without fail.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 3 — RSVP ============ -->
+<section id="rsvp" data-document-role="page" data-label="RSVP">
+  <div class="col blocks">
+    <div class="stack">
+      <p class="script">Kindly Reply</p>
+      <div class="rule"></div>
+      <p class="label">By 20 December 2026</p>
+    </div>
+
+    <div class="form stack">
+      <p>One form per household. If you are bringing anyone, add them here rather than telling us at
+        the door.</p>
+      <div class="field">Full name of each guest</div>
+      <div class="field">Joyfully accepts &nbsp;/&nbsp; Regretfully declines</div>
+      <div class="field">Which events will you join?</div>
+      <div class="field">Meal preference</div>
+      <div class="field">Allergies or dietary needs</div>
+      <div class="field">A song that will get you dancing</div>
+    </div>
+
+    <div class="stack">
+      <p class="deadline">20 December 2026</p>
+      <p class="cap" style="color:#6E6353">After that the caterers stop being kind to us.
+        If a form is not your thing, write to elena.rohan@example.com and we will add you by hand.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 4 — OUR STORY ============ -->
+<section id="story" data-document-role="page" data-label="Our Story">
+  <div class="col blocks">
+    <div class="stack">
+      <p class="script">Our Story</p>
+      <div class="rule"></div>
+    </div>
+
+    <div class="story">
+      <div class="ph"><span>Photo</span></div>
+      <div>
+        <h3>How we met</h3>
+        <p>A delayed train out of Ahmedabad, one shared plug socket, and four hours neither of us
+          would give back. Rohan claims he offered first. He did not.</p>
+      </div>
+    </div>
+
+    <div class="story">
+      <div class="ph"><span>Photo</span></div>
+      <div>
+        <h3>The proposal</h3>
+        <p>On the roof at her parents' house, the same evening the power went out across the whole
+          street. He had planned lights. The dark was better.</p>
+      </div>
+    </div>
+
+    <div class="story">
+      <div class="ph"><span>Photo</span></div>
+      <div>
+        <h3>And now</h3>
+        <p>Two cities, one very opinionated cat, and a wedding we would like you at more than we know
+          how to say on a website.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 5 — SAVE THE DATE ============ -->
+<section id="std" data-document-role="page" data-label="Save the Date">
+  <div class="col blocks">
+    <div class="stack">
+      <p class="label">Save the date</p>
+      <p class="names">Elena &amp; Rohan</p>
+      <div class="rule"></div>
+      <p class="h2">14 . 02 . 2027</p>
+      <p class="label">Udaipur, India</p>
+    </div>
+    <div class="ph" style="aspect-ratio:16/9"><span>Photo</span></div>
+    <p class="body">Invitation to follow. Book nothing else for that week.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="col stack">
+    <p class="script" style="font-size:80px">Elena &amp; Rohan</p>
+    <p class="cap">Questions? elena.rohan@example.com</p>
+  </div>
+</footer>
+
+</body>
+</html>
