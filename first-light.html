@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elena &amp; Rohan — First Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+
+<!-- ============== EVERYTHING THE COUPLE EDITS LIVES HERE ==============
+     Open this file with ?edit added to the address for the visual editor. -->
+<script id="cfg" type="application/json">
+{
+ "names": "Elena & Rohan",
+ "dateLine": "14 February 2027",
+ "city": "Udaipur, India",
+ "iso": "2027-02-14T16:30:00+05:30",
+ "opening_line": "Before the day begins, a night to remember.",
+ "invite_line": "We are getting married at first light of our new life — and we want you there for all of it.",
+ "story": [
+  {"title":"The night we met","text":"A delayed train out of Ahmedabad, one shared plug socket, and four hours neither of us would give back."},
+  {"title":"The night he asked","text":"On the roof at her parents' house, the evening the power failed across the whole street. He had planned lights. The dark was better."},
+  {"title":"Every night since","text":"Two cities, one very opinionated cat, and now a date on the calendar that belongs to all of us."}
+ ],
+ "events": [
+  {"label":"Mehendi","date":"10 Feb","time":"4:00 pm","venue":"Courtyard, Hotel Amet Haveli"},
+  {"label":"Haldi","date":"11 Feb","time":"10:00 am","venue":"At home"},
+  {"label":"Sangeet","date":"12 Feb","time":"8:00 pm","venue":"Durbar Hall"},
+  {"label":"The Ceremony","date":"14 Feb","time":"4:30 pm","venue":"Zenana Mahal, The City Palace"},
+  {"label":"Reception","date":"14 Feb","time":"7:30 pm","venue":"Jagmandir Island, Lake Pichola"}
+ ],
+ "stay": "Rooms are held at Amet Haveli (+91 294 243 1085) and Hotel Lakend (+91 294 243 3006). Say our names. Cars run between both hotels and every event.",
+ "wear": "Indian formal or black tie, comfortable shoes, and a shawl — February nights by the lake are colder than they look.",
+ "notes": "Nearest airport: Maharana Pratap, 30 minutes away. Children welcome everywhere except the sangeet. No parking at the palace — take the shuttle.",
+ "rsvpUrl": "#",
+ "rsvpBy": "20 December 2026",
+ "email": "elena.rohan@example.com"
+}
+</script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --silver:#D9DCE8; --silver-dim:#8E93A8;
+  --ember:#E8B064; --dawn-ink:#4A2E22;
+}
+html{scroll-behavior:auto}
+body{
+  background:#05060E; color:var(--silver);
+  font-family:"Cormorant Garamond",Georgia,serif;
+  overflow-x:hidden;
+}
+#track{height:820vh}
+#sky{position:fixed;inset:0;z-index:1}
+#sky canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* ---------- scenes: fixed, faded in and out by scroll ---------- */
+.scene{
+  position:fixed;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
+  text-align:center;opacity:0;pointer-events:none;padding:0 7vw;
+}
+.scene .inner{max-width:640px;width:100%}
+.lbl{
+  font-family:"Jost",sans-serif;font-weight:300;text-transform:uppercase;
+  letter-spacing:.42em;font-size:12px;color:var(--silver-dim);
+}
+.big{
+  font-weight:300;font-size:clamp(44px,9vw,92px);line-height:1.08;letter-spacing:.02em;
+}
+.mid{font-weight:300;font-size:clamp(26px,5vw,44px);line-height:1.25}
+.ital{font-style:italic;font-weight:300;font-size:clamp(20px,3.6vw,28px);line-height:1.5;color:var(--silver-dim)}
+.gap>*+*{margin-top:26px}
+.hair{width:64px;height:1px;background:currentColor;opacity:.5;margin:0 auto}
+
+/* the late scenes sit on a light sky and flip to dawn ink */
+.scene.dawn{color:var(--dawn-ink)}
+.scene.dawn .lbl{color:rgba(245,227,206,.9)}
+.scene.dawn .ital{color:#7A5239}
+
+/* events: a thin thread with stations */
+.ev{list-style:none;text-align:left;position:relative;padding-left:34px}
+.ev::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:1px;
+  background:linear-gradient(var(--silver-dim),transparent 96%);opacity:.65}
+.scene.dawn .ev::before{background:linear-gradient(#8A5E43,transparent 96%)}
+.ev li{margin:26px 0;position:relative}
+.ev li::before{content:"";position:absolute;left:-30px;top:12px;width:7px;height:7px;
+  border-radius:50%;border:1px solid currentColor;background:transparent}
+.ev .t{font-family:"Jost",sans-serif;font-weight:300;font-size:12px;letter-spacing:.3em;
+  text-transform:uppercase;opacity:.75}
+.ev .n{font-size:clamp(24px,4.4vw,34px);font-weight:300;line-height:1.2}
+.ev .v{font-style:italic;font-size:17px;opacity:.75}
+
+.cta{
+  display:inline-block;margin-top:10px;padding:16px 46px;text-decoration:none;
+  font-family:"Jost",sans-serif;font-weight:400;font-size:13px;letter-spacing:.4em;
+  text-transform:uppercase;color:#3A2418;border:1px solid rgba(74,46,34,.7);
+  transition:background .3s,color .3s;pointer-events:auto;
+}
+.cta:hover{background:#4A2E22;color:#F7E9D4}
+.count{display:flex;gap:30px;justify-content:center;font-family:"Jost",sans-serif}
+.count b{display:block;font-weight:200;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.count span{font-size:10px;letter-spacing:.32em;text-transform:uppercase;opacity:.7}
+
+#hint{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:6;
+  font-family:"Jost",sans-serif;font-weight:300;font-size:11px;letter-spacing:.42em;
+  text-transform:uppercase;color:var(--silver-dim);transition:opacity .6s;pointer-events:none}
+#hint::after{content:"";display:block;width:1px;height:36px;margin:12px auto 0;
+  background:linear-gradient(var(--silver),transparent);animation:drip 2s ease infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}60%{transform:scaleY(1)}100%{opacity:0}}
+#hint.off{opacity:0}
+
+/* ---------- editor (shared plumbing, restyled to this design) ---------- */
+#editor{position:fixed;inset:0 0 0 auto;width:min(430px,100vw);z-index:60;background:#F5EFE6;
+  color:#2A2018;overflow-y:auto;padding:26px 22px 90px;font-family:Georgia,serif;
+  box-shadow:-12px 0 40px rgba(0,0,0,.5)}
+#editor h2{font-family:"Cormorant Garamond",serif;font-weight:500;font-size:22px}
+#editor .hint{font-size:13px;color:#7A6A55;margin:6px 0 16px;font-style:italic}
+#editor label{display:block;font-family:"Jost",sans-serif;font-size:10px;text-transform:uppercase;
+  letter-spacing:.2em;color:#8A7860;margin:14px 0 4px}
+#editor input,#editor textarea{width:100%;border:1px solid #CBBFA9;background:#FFFCF6;
+  padding:9px 10px;font:inherit;font-size:14px;color:#2A2018}
+#editor textarea{min-height:64px;resize:vertical}
+#editor .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#editor fieldset{border:1px solid #D5CAB4;padding:12px;margin-top:18px}
+#editor legend{font-family:"Jost",sans-serif;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:#8A7860;padding:0 6px}
+#editor .dl{position:fixed;right:14px;bottom:14px;z-index:61;background:#2A2018;color:#F5EFE6;
+  border:0;font-family:"Jost",sans-serif;letter-spacing:.24em;text-transform:uppercase;
+  font-size:12px;padding:16px 26px;cursor:pointer}
+#editor .close{position:absolute;top:12px;right:14px;background:none;border:0;font-size:22px;
+  cursor:pointer;color:#8A7860}
+body.editing #track{display:none}
+body.editing .scene{position:static;opacity:1;pointer-events:auto;padding:40px 7vw;transform:none!important}
+body.editing #sky,body.editing #hint{display:none}
+body.editing{background:#0E1120;overflow:auto}
+@media(min-width:900px){body.editing .scene{margin-right:430px}}
+
+@media (prefers-reduced-motion:reduce){
+  #track{height:auto}
+  .scene{position:static;opacity:1;pointer-events:auto;padding:60px 7vw;transform:none!important}
+  #sky{position:absolute;height:100vh}
+  #hint{display:none}
+}
+</style>
+<noscript><style>
+#track{height:auto}.scene{position:static;opacity:1;pointer-events:auto;padding:60px 7vw}#hint{display:none}
+</style></noscript>
+</head>
+<body>
+
+<div id="sky"><canvas id="cv"></canvas></div>
+<div id="hint">Scroll</div>
+
+<!-- scenes: data-c = centre of life on the 0..1 scroll line, data-w = width of life -->
+<section class="scene" data-c="0.05" data-w="0.14">
+  <div class="inner gap">
+    <p class="lbl" data-bind="dateLine"></p>
+    <p class="mid ital" data-bind="opening_line"></p>
+  </div>
+</section>
+
+<section class="scene" data-c="0.16" data-w="0.15">
+  <div class="inner gap">
+    <p class="lbl">Two names, one sky</p>
+    <h1 class="big" data-bind="names"></h1>
+    <div class="hair"></div>
+    <p class="lbl"><span data-bind="dateLine"></span> &middot; <span data-bind="city"></span></p>
+  </div>
+</section>
+
+<section class="scene" data-c="0.30" data-w="0.13">
+  <div class="inner gap">
+    <p class="lbl" data-story-title="0"></p>
+    <p class="mid ital" data-story-text="0"></p>
+  </div>
+</section>
+<section class="scene" data-c="0.42" data-w="0.13">
+  <div class="inner gap">
+    <p class="lbl" data-story-title="1"></p>
+    <p class="mid ital" data-story-text="1"></p>
+  </div>
+</section>
+<section class="scene" data-c="0.54" data-w="0.13">
+  <div class="inner gap">
+    <p class="lbl" data-story-title="2"></p>
+    <p class="mid ital" data-story-text="2"></p>
+  </div>
+</section>
+
+<section class="scene" data-c="0.68" data-w="0.15">
+  <div class="inner gap">
+    <p class="lbl">The days themselves</p>
+    <ul class="ev" id="ev-list"></ul>
+  </div>
+</section>
+
+<section class="scene dawn" data-c="0.82" data-w="0.13">
+  <div class="inner gap">
+    <p class="lbl">Good to know</p>
+    <p class="ital" data-bind="stay"></p>
+    <p class="ital" data-bind="wear"></p>
+    <p class="ital" data-bind="notes"></p>
+  </div>
+</section>
+
+<section class="scene dawn" data-c="0.94" data-w="0.16">
+  <div class="inner gap">
+    <p class="lbl">At first light</p>
+    <p class="mid" data-bind="invite_line"></p>
+    <div class="count">
+      <div><b id="cd-d">—</b><span>days</span></div>
+      <div><b id="cd-h">—</b><span>hours</span></div>
+      <div><b id="cd-m">—</b><span>min</span></div>
+    </div>
+    <p><a class="cta" id="rsvp-link" href="#">Reply by <span data-bind="rsvpBy"></span></a></p>
+    <p class="ital" style="font-size:16px">or write to <span data-bind="email"></span></p>
+  </div>
+</section>
+
+<div id="track"></div>
+
+<script>
+"use strict";
+/* ============================ FIRST LIGHT ============================
+   One continuous scroll from midnight to dawn. The sky is a canvas whose
+   every frame is a pure function of scroll progress p in [0,1]; the DOM
+   scenes fade through fixed windows on the same line. No libraries. */
+
+const $ = s => document.querySelector(s);
+const cfg = JSON.parse($('#cfg').textContent);
+const Q = new URLSearchParams(location.search);
+
+/* ---------- content ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(){
+  document.title = cfg.names + ' — First Light';
+  document.querySelectorAll('[data-bind]').forEach(el => { el.textContent = cfg[el.dataset.bind] ?? ''; });
+  document.querySelectorAll('[data-story-title]').forEach(el => {
+    el.textContent = (cfg.story[+el.dataset.storyTitle] || {}).title || ''; });
+  document.querySelectorAll('[data-story-text]').forEach(el => {
+    el.textContent = (cfg.story[+el.dataset.storyText] || {}).text || ''; });
+  $('#ev-list').innerHTML = (cfg.events||[]).map(e => `
+    <li><div class="t">${esc(e.date)} · ${esc(e.time)}</div>
+        <div class="n">${esc(e.label)}</div>
+        <div class="v">${esc(e.venue)}</div></li>`).join('');
+  $('#rsvp-link').href = cfg.rsvpUrl || '#';
+}
+function countdown(){
+  const t = new Date(cfg.iso).getTime();
+  const tick = () => {
+    const d = Math.max(0, t - Date.now());
+    $('#cd-d').textContent = Math.floor(d/864e5);
+    $('#cd-h').textContent = String(Math.floor(d/36e5)%24).padStart(2,'0');
+    $('#cd-m').textContent = String(Math.floor(d/6e4)%60).padStart(2,'0');
+  };
+  tick(); setInterval(tick, 30000);
+}
+
+/* ---------- the sky ---------- */
+const cv = $('#cv'), ctx = cv.getContext('2d');
+let W, H, DPR;
+function fit(){
+  DPR = Math.min(2, devicePixelRatio || 1);
+  W = innerWidth; H = innerHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener('resize', () => {fit(); paint(lastP);}); fit();
+
+/* night -> dawn keyframes; each is [topColor, midColor, horizonColor] */
+const SKY = [
+  [0.00, ['#04050D','#070A18','#0B1024']],
+  [0.30, ['#05060F','#0A0E20','#141A34']],
+  [0.55, ['#0A0B1C','#1A1633','#33244A']],
+  [0.72, ['#141026','#3A2247','#6E3A4A']],
+  [0.84, ['#2A1B33','#7A3E4E','#C97B4E']],
+  [0.93, ['#4A2E4A','#B4685A','#E8A868']],
+  [1.00, ['#6E4A5E','#D98F6E','#F5D4A8']],
+];
+function hex2rgb(h){const n=parseInt(h.slice(1),16);return [n>>16&255,n>>8&255,n&255];}
+function mix(a,b,t){return a.map((v,i)=>Math.round(v+(b[i]-v)*t));}
+function skyAt(p){
+  let i = 0;
+  while (i < SKY.length-2 && p > SKY[i+1][0]) i++;
+  const [p0,c0] = SKY[i], [p1,c1] = SKY[i+1];
+  const t = Math.min(1, Math.max(0,(p-p0)/(p1-p0)));
+  return c0.map((c,k)=>mix(hex2rgb(c), hex2rgb(c1[k]), t));
+}
+
+/* star field, mountains, mist, sun — all deterministic */
+const R = (seed => () => (seed = seed*16807 % 2147483647) / 2147483647)(20270214);
+const stars = Array.from({length:170}, () => ({x:R(), y:R()*0.82, r:0.4+R()*1.2, ph:R()*6.28, tw:0.5+R()*1.6}));
+const ridgeA = Array.from({length:9}, (_,i) => 0.72 + Math.sin(i*1.7)*0.05 + R()*0.05);
+const ridgeB = Array.from({length:7}, (_,i) => 0.82 + Math.sin(i*2.3)*0.04 + R()*0.04);
+
+function ridge(pts, yBase, col, lift){
+  ctx.fillStyle = col;
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  const n = pts.length;
+  for (let i = 0; i < n; i++){
+    const x = i/(n-1)*W;
+    const y = (pts[i] - lift)*H;
+    i === 0 ? ctx.lineTo(x,y) : ctx.quadraticCurveTo(
+      (i-0.5)/(n-1)*W, (pts[i-1]-lift)*H, x, y);
+  }
+  ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+}
+
+let lastP = 0;
+function paint(p){
+  lastP = p;
+  const [top, mid, hor] = skyAt(p);
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, `rgb(${top})`); g.addColorStop(0.55, `rgb(${mid})`); g.addColorStop(1, `rgb(${hor})`);
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  const dawn = Math.min(1, Math.max(0, (p-0.72)/0.28));   // how much morning
+  const nightAlpha = 1 - Math.min(1, Math.max(0,(p-0.6)/0.3));
+
+  /* stars, dying as morning comes */
+  if (nightAlpha > 0){
+    const t = p*40;
+    for (const s of stars){
+      const a = (0.35 + 0.35*Math.sin(t*s.tw + s.ph)) * nightAlpha;
+      ctx.globalAlpha = Math.max(0, a);
+      ctx.fillStyle = '#DCE0EE';
+      ctx.beginPath(); ctx.arc(s.x*W, s.y*H*(1 - p*0.12), s.r, 0, 7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* the two stars that find each other: alive over p 0..0.24 */
+  if (p < 0.26){
+    const lp = Math.min(1, p/0.20);
+    const e = lp*lp*(3-2*lp);
+    const y = H*0.30;
+    const x1 = W*0.18 + (W*0.5 - W*0.18)*e;
+    const x2 = W*0.82 - (W*0.82 - W*0.5)*e;
+    const fade = p < 0.22 ? 1 : 1-(p-0.22)/0.04;
+    ctx.globalAlpha = Math.max(0, fade);
+    ctx.shadowColor = '#EEF1FF'; ctx.shadowBlur = 18;
+    ctx.fillStyle = '#F5F7FF';
+    ctx.beginPath(); ctx.arc(x1, y, 2.6, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(x2, y, 2.2, 0, 7); ctx.fill();
+    if (e > 0.96){                       // they meet: one brighter star, a ring
+      ctx.beginPath(); ctx.arc(W/2, y, 3.4, 0, 7); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(238,241,255,.5)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(W/2, y, 14 + (p-0.192)*900, 0, 7); ctx.stroke();
+    }
+    ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+  }
+
+  /* setting moon */
+  if (nightAlpha > 0){
+    const mx = W*0.78 - p*W*0.5, my = H*(0.20 + p*0.9);
+    ctx.globalAlpha = nightAlpha*0.9;
+    ctx.fillStyle = '#E6E4DA';
+    ctx.shadowColor = '#E6E4DA'; ctx.shadowBlur = 30;
+    ctx.beginPath(); ctx.arc(mx, my, Math.min(W,H)*0.05, 0, 7); ctx.fill();
+    ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+  }
+
+  /* rising sun */
+  if (dawn > 0){
+    const sy = H*(1.05 - dawn*0.33);
+    const sr = Math.min(W,H)*0.075;
+    const glow = ctx.createRadialGradient(W/2, sy, 0, W/2, sy, sr*7);
+    glow.addColorStop(0, `rgba(255,214,150,${0.55*dawn})`);
+    glow.addColorStop(1, 'rgba(255,214,150,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#FFE3B0';
+    ctx.shadowColor = '#FFD696'; ctx.shadowBlur = 40;
+    ctx.beginPath(); ctx.arc(W/2, sy, sr*dawn, 0, 7); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  /* mountains and their lake reflection, parallax with p */
+  const farC  = mix(hex2rgb('#0A0D1E'), hex2rgb('#7A4838'), dawn);
+  const nearC = mix(hex2rgb('#06070F'), hex2rgb('#4A2A22'), dawn);
+  ridge(ridgeA, 0, `rgb(${farC})`,  p*0.05);
+  ridge(ridgeB, 0, `rgb(${nearC})`, p*0.02);
+
+  /* dawn birds */
+  if (dawn > 0.45){
+    ctx.strokeStyle = `rgba(58,36,24,${(dawn-0.45)*1.4})`;
+    ctx.lineWidth = 1.4; ctx.lineCap = 'round';
+    const t = p*30;
+    for (let b = 0; b < 5; b++){
+      const bx = W*(0.2 + b*0.15) + Math.sin(t + b)*8;
+      const by = H*(0.24 + (b%3)*0.06) + Math.cos(t*0.7 + b)*5;
+      const w = 7 + (b%3)*2, f = Math.sin(t*2 + b*2)*3;
+      ctx.beginPath();
+      ctx.moveTo(bx-w, by); ctx.quadraticCurveTo(bx-w*0.3, by-4-f, bx, by);
+      ctx.quadraticCurveTo(bx+w*0.3, by-4-f, bx+w, by);
+      ctx.stroke();
+    }
+  }
+}
+
+/* ---------- scenes on the same line ---------- */
+const scenes = [...document.querySelectorAll('.scene')];
+function placeScenes(p){
+  for (const sc of scenes){
+    const c = +sc.dataset.c, w = +sc.dataset.w;
+    const d = Math.abs(p - c) / (w/2);
+    const vis = Math.max(0, 1 - d);
+    const e = vis*vis*(3-2*vis);
+    sc.style.opacity = e;
+    sc.style.transform = `translateY(${(p-c)*-160}px)`;
+    sc.style.pointerEvents = e > 0.5 ? 'auto' : 'none';
+  }
+}
+
+/* ---------- scroll plumbing ---------- */
+const track = $('#track'), hint = $('#hint');
+let ticking = false;
+function progress(){
+  const max = track.offsetHeight - innerHeight;
+  return Math.min(1, Math.max(0, scrollY / max));
+}
+function onScroll(){
+  if (ticking) return; ticking = true;
+  requestAnimationFrame(() => {
+    const p = progress();
+    paint(p); placeScenes(p);
+    hint.classList.toggle('off', scrollY > 60);
+    ticking = false;
+  });
+}
+addEventListener('scroll', onScroll, {passive:true});
+
+/* ---------- editor (same contract as the other engines) ---------- */
+function buildEditor(){
+  document.body.classList.add('editing');
+  const ed = document.createElement('div'); ed.id = 'editor';
+  const F = (label, val, key, kind) => `
+    <label>${label}</label>
+    ${kind === 'area'
+      ? `<textarea data-k="${key}">${esc(val)}</textarea>`
+      : `<input type="${kind||'text'}" data-k="${key}" value="${esc(val)}">`}`;
+  ed.innerHTML = `
+    <button class="close" title="Close">&times;</button>
+    <h2>Make it yours</h2>
+    <p class="hint">The page behind this panel shows every scene at once while you edit.
+      Press Download for your own copy of the film.</p>
+    ${F('Couple', cfg.names, 'names')}
+    <div class="row">${F('Date shown', cfg.dateLine, 'dateLine')}${F('City', cfg.city, 'city')}</div>
+    ${F('Wedding date & time (countdown)', cfg.iso.slice(0,16), 'iso', 'datetime-local')}
+    ${F('Opening line', cfg.opening_line, 'opening_line', 'area')}
+    ${F('The invitation line, at dawn', cfg.invite_line, 'invite_line', 'area')}
+    <fieldset><legend>Three nights (your story)</legend>
+      ${cfg.story.map((s,i) => `
+        ${F('Title '+(i+1), s.title, 'story.'+i+'.title')}
+        ${F('Text', s.text, 'story.'+i+'.text', 'area')}`).join('')}
+    </fieldset>
+    <fieldset><legend>Events</legend>
+      ${cfg.events.map((e,i) => `
+        <div class="row">${F('Event '+(i+1), e.label, 'events.'+i+'.label')}${F('Date', e.date, 'events.'+i+'.date')}</div>
+        <div class="row">${F('Time', e.time, 'events.'+i+'.time')}${F('Venue', e.venue, 'events.'+i+'.venue')}</div>`).join('')}
+    </fieldset>
+    ${F('Where to stay', cfg.stay, 'stay', 'area')}
+    ${F('What to wear', cfg.wear, 'wear', 'area')}
+    ${F('Good to know', cfg.notes, 'notes', 'area')}
+    <fieldset><legend>RSVP</legend>
+      ${F('RSVP form link', cfg.rsvpUrl, 'rsvpUrl')}
+      <div class="row">${F('Reply by', cfg.rsvpBy, 'rsvpBy')}${F('Email', cfg.email, 'email')}</div>
+    </fieldset>
+    <button class="dl">Download my invitation</button>`;
+  document.body.appendChild(ed);
+  ed.addEventListener('input', e => {
+    const k = e.target.dataset.k; if (!k) return;
+    const path = k.split('.');
+    let o = cfg;
+    while (path.length > 1){ o = o[isNaN(path[0]) ? path[0] : +path[0]]; path.shift(); }
+    o[isNaN(path[0]) ? path[0] : +path[0]] = e.target.value;
+    render(); countdown();
+  });
+  ed.querySelector('.close').addEventListener('click', () => {
+    ed.remove(); document.body.classList.remove('editing'); onScroll();
+  });
+  ed.querySelector('.dl').addEventListener('click', bake);
+}
+function bake(){
+  $('#cfg').textContent = '\n' + JSON.stringify(cfg, null, 1) + '\n';
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelector('#editor')?.remove();
+  clone.querySelector('body').className = '';
+  clone.querySelectorAll('.scene').forEach(sc => { sc.style.cssText = ''; });
+  clone.querySelector('#hint').className = '';
+  const blob = new Blob(['<!doctype html>\n' + clone.outerHTML], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (cfg.names.replace(/[^a-z0-9]+/gi,'-').toLowerCase() || 'wedding') + '-first-light.html';
+  a.click();
+}
+
+/* ---------- boot ---------- */
+render(); countdown();
+if (Q.has('edit') || location.hash === '#edit'){
+  buildEditor();
+} else {
+  if (Q.get('p')) requestAnimationFrame(() => {   // debug: jump the film to a point
+    scrollTo(0, (track.offsetHeight - innerHeight) * parseFloat(Q.get('p')));
+  });
+  paint(0); placeScenes(0); onScroll();
+}
+</script>
+</body>
+</html>
