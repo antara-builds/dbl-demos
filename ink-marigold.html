@@ -60,30 +60,30 @@ section{padding:160px 0;min-height:600px;text-align:center;position:relative;scr
   content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(70% 55% at 50% 45%, transparent 40%, rgba(8,9,17,.72) 100%);
 }
-.seal{
-  width:118px;height:118px;border-radius:50%;
-  background:radial-gradient(circle at 34% 30%, var(--marigold-lift), #8E5F17 78%);
-  display:grid;place-items:center;margin:0 auto 48px;
-  font-family:"Italiana",serif;font-size:36px;letter-spacing:.12em;color:#2A1B05;
-  box-shadow:0 14px 40px rgba(0,0,0,.55), inset 0 2px 6px rgba(255,255,255,.35);
-}
-.env{width:100%;max-width:900px;height:auto;display:block;margin:0 auto 40px}
 
-/* Press-to-open. Deliberately matched to what Canva Sites can actually do with a page
-   transition, so the demo does not promise motion the delivered template cannot make. */
-.env{transform-origin:50% 62%;transition:transform .9s cubic-bezier(.2,.8,.25,1),opacity .7s ease}
-#envelope .col:hover .env{transform:scale(1.035) translateY(-8px)}
-#envelope.opening .env{transform:scale(1.55) translateY(-16%);opacity:0}
-#envelope.opening .names,#envelope.opening .label,#envelope.opening .open{opacity:0;transition:opacity .45s ease}
-@media (prefers-reduced-motion:reduce){.env,#envelope.opening .env{transition:none}}
-.open{
-  display:inline-block;margin-top:56px;padding:18px 44px;
-  border:1px solid var(--marigold);color:var(--marigold-lift);
-  font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.30em;font-size:20px;
-  text-decoration:none;transition:background .25s,color .25s;
-}
-.open:hover{background:var(--marigold);color:#1A1204}
 
+
+
+
+
+/* ---- landing: typography over the plate, nothing else ---- */
+.land{display:flex;flex-direction:column;align-items:center;text-align:center;
+  transform:translateY(-6%)}
+.ring{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(224,177,95,.75);box-shadow:inset 0 0 0 3px rgba(23,26,46,.0),0 0 0 5px rgba(224,177,95,.16);
+  font-family:"Marcellus",serif;font-size:26px;letter-spacing:.18em;color:var(--ivory);
+  text-indent:.18em;margin-bottom:56px}
+.land-label{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.34em;
+  font-size:19px;color:rgba(242,235,221,.72)}
+.land-names{font-family:"Marcellus",serif;font-weight:400;font-size:150px;line-height:1.06;
+  letter-spacing:.06em;color:var(--ivory);margin:34px 0 0;text-shadow:0 2px 30px rgba(5,6,14,.55)}
+.land-rule{width:110px;height:1px;background:linear-gradient(90deg,transparent,var(--marigold),transparent);
+  margin:44px auto}
+.land-open{display:inline-block;margin-top:64px;padding-bottom:10px;
+  font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.4em;font-size:19px;
+  color:var(--marigold-lift);text-decoration:none;border-bottom:1px solid rgba(224,177,95,.55);
+  text-indent:.4em}
+.land-open:hover{color:var(--ivory);border-bottom-color:var(--ivory)}
 /* ---- nav ---- */
 nav{
   position:sticky;top:0;z-index:20;
@@ -156,6 +156,12 @@ nav a:hover,nav a.on{color:var(--ivory);border-bottom-color:var(--marigold)}
 footer{padding:90px 0 70px;text-align:center;border-top:1px solid rgba(242,235,221,.12)}
 
 @media (max-width:760px){
+  .land-names{font-size:58px}
+  .land-label{font-size:13px;letter-spacing:.26em}
+  .ring{width:78px;height:78px;font-size:19px;margin-bottom:36px}
+  .land-open{font-size:14px;letter-spacing:.3em}
+  .land-rule{margin:30px auto}
+
   body{font-size:20px}
   .script{font-size:66px}
   .names{font-size:46px}
@@ -191,46 +197,15 @@ footer{padding:90px 0 70px;text-align:center;border-top:1px solid rgba(242,235,2
 <!-- ============ PAGE 0 — ENVELOPE ============ -->
 <section id="envelope">
   <img src="https://antara-builds.github.io/dbl-demos/ink-envelope-bg.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0">
-  <div style="position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(11,13,24,.72) 0%,rgba(11,13,24,.28) 42%,rgba(11,13,24,.18) 62%,rgba(11,13,24,.62) 100%)"></div>
-  <div class="col" style="position:relative;z-index:1">
-    <svg class="env" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A sealed wedding envelope">
-  <defs>
-    <linearGradient id="paper" x1="0" y1="0" x2="0.35" y2="1">
-      <stop offset="0%" stop-color="#F6F0E4"/><stop offset="55%" stop-color="#EFE7D7"/>
-      <stop offset="100%" stop-color="#E3D9C6"/>
-    </linearGradient>
-    <linearGradient id="flap" x1="0.2" y1="0" x2="0.7" y2="1">
-      <stop offset="0%" stop-color="#F8F3E9"/><stop offset="100%" stop-color="#E7DECB"/>
-    </linearGradient>
-    <radialGradient id="wax" cx="36%" cy="30%">
-      <stop offset="0%" stop-color="#E7BC6E"/><stop offset="62%" stop-color="#C98A2B"/>
-      <stop offset="100%" stop-color="#8C5C15"/>
-    </radialGradient>
-  </defs>
-
-  <!-- body. No SVG filter: Canva's importer drops any group that carries one. -->
-  <rect x="72" y="86" width="780" height="480" rx="8" fill="#0B0D18" opacity="0.55"/>
-  <rect x="60" y="70" width="780" height="480" rx="8" fill="url(#paper)"/>
-  <!-- side seams, drawn as the paper folds a real envelope has -->
-  <path d="M60 70 L450 372 L840 70" fill="none" stroke="#CFC2A8" stroke-width="1.6"/>
-  <path d="M60 550 L392 330" fill="none" stroke="#D6CAB2" stroke-width="1.4"/>
-  <path d="M840 550 L508 330" fill="none" stroke="#D6CAB2" stroke-width="1.4"/>
-  <!-- closed top flap -->
-  <path d="M60 70 L450 372 L840 70 Z" fill="url(#flap)" stroke="#CFC2A8" stroke-width="1.6"/>
-
-  <!-- wax seal on the flap join -->
-  <g>
-    <circle cx="450" cy="372" r="76" fill="url(#wax)"/>
-    <circle cx="450" cy="372" r="76" fill="none" stroke="#7A4E10" stroke-width="2" opacity="0.55"/>
-    <circle cx="450" cy="372" r="62" fill="none" stroke="#7A4E10" stroke-width="1.2" opacity="0.42"/>
-    <text x="450" y="392" text-anchor="middle" font-family="Marcellus, serif" font-size="46"
-          letter-spacing="6" fill="#2E1E06">ER</text>
-  </g>
-</svg>
-    <p class="names">Elena<br>&amp; Rohan</p>
-    <div class="rule" style="margin:38px auto"></div>
-    <p class="label">14 February 2027 &middot; Udaipur, India</p>
-    <a class="open" href="#invitation">Open the invitation</a>
+  <div style="position:absolute;inset:0;z-index:0;background:
+    linear-gradient(180deg,rgba(11,13,24,.55) 0%,rgba(11,13,24,.10) 34%,rgba(11,13,24,0) 58%,rgba(11,13,24,.30) 100%)"></div>
+  <div class="land" style="position:relative;z-index:1">
+    <div class="ring">E&thinsp;&middot;&thinsp;R</div>
+    <p class="land-label">Together with their families</p>
+    <h1 class="land-names">Elena<br>&amp; Rohan</h1>
+    <div class="land-rule"></div>
+    <p class="land-label">14 February 2027 &nbsp;&middot;&nbsp; Udaipur, India</p>
+    <a class="land-open" href="#invitation">Open the invitation</a>
   </div>
 </section>
 
@@ -443,14 +418,5 @@ footer{padding:90px 0 70px;text-align:center;border-top:1px solid rgba(242,235,2
   </div>
 </footer>
 
-<script>
-document.querySelector('.open')?.addEventListener('click', e => {
-  const sec = document.getElementById('envelope');
-  if (!sec) return;
-  e.preventDefault();
-  sec.classList.add('opening');
-  setTimeout(() => { location.hash = '#invitation'; }, 620);
-});
-</script>
 </body>
 </html>
