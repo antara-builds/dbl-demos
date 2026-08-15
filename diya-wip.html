@@ -324,6 +324,32 @@ scene.add(water);
   scene.add(im);
 }
 
+/* ---------- video loops: black-background clips + additive blending = free luma key ---------- */
+const B = "https://antara-builds.github.io/dbl-demos/";
+function videoTex(url){
+  const v = document.createElement("video");
+  v.muted = true; v.loop = true; v.playsInline = true; v.crossOrigin = "anonymous";
+  v.src = url; v.play().catch(()=>{});
+  addEventListener("pointerdown", () => v.play().catch(()=>{}), {once:true});
+  addEventListener("scroll", () => v.play().catch(()=>{}), {once:true});
+  const t = new THREE.VideoTexture(v);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const flameTex = videoTex(B + "loop_flame.mp4");
+const mistTex  = videoTex(B + "loop_mist.mp4");
+
+/* mist sprites drifting over the river at intervals */
+for (const u of [0.16, 0.38, 0.60, 0.80]){
+  const at = PATH.getPointAt(u);
+  const m = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: mistTex, blending: THREE.AdditiveBlending, depthWrite: false,
+    transparent: true, opacity: 0.42 }));
+  m.scale.set(20, 11.2, 1);
+  m.position.set(at.x, 1.6, at.z);
+  scene.add(m);
+}
+
 /* ---------- hero diya ---------- */
 const diya = new THREE.Group();
 {
@@ -335,8 +361,8 @@ const diya = new THREE.Group();
   const bowl = new THREE.Mesh(new THREE.LatheGeometry(pts, 20),
     new THREE.MeshBasicMaterial({color:0x5A2E18}));
   const flame = new THREE.Sprite(new THREE.SpriteMaterial({
-    map:glowTex, color:0xFFD08A, blending:THREE.AdditiveBlending, depthWrite:false}));
-  flame.scale.setScalar(0.9); flame.position.y = 0.34;
+    map:flameTex, blending:THREE.AdditiveBlending, depthWrite:false}));
+  flame.scale.set(1.9, 1.07, 1); flame.position.y = 0.62;
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({
     map:glowTex, color:0xFFC873, transparent:true, opacity:0.5,
     blending:THREE.AdditiveBlending, depthWrite:false}));
