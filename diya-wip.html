@@ -339,15 +339,30 @@ function videoTex(url){
 const flameTex = videoTex(B + "loop_flame.mp4");
 const mistTex  = videoTex(B + "loop_mist.mp4");
 
-/* mist sprites drifting over the river at intervals */
+/* additive video with a luma floor: subtracts the clip's near-black background
+   so no rectangle ever shows — only the light survives */
+function keyedVideoMat(tex, floor, gain, alpha){
+  return new THREE.ShaderMaterial({
+    uniforms: { map: {value: tex}, uFloor: {value: floor}, uGain: {value: gain}, uAlpha: {value: alpha} },
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: `varying vec2 vUv;
+      void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+    fragmentShader: `uniform sampler2D map; uniform float uFloor, uGain, uAlpha; varying vec2 vUv;
+      void main(){
+        vec3 c = texture2D(map, vUv).rgb;
+        c = max(c - vec3(uFloor), 0.0) * uGain;
+        float edge = smoothstep(0.0, 0.18, vUv.x) * smoothstep(1.0, 0.82, vUv.x)
+                   * smoothstep(0.0, 0.18, vUv.y) * smoothstep(1.0, 0.82, vUv.y);
+        gl_FragColor = vec4(c * uAlpha * edge, 1.0);
+      }`,
+  });
+}
+const mistPlanes = [];
 for (const u of [0.16, 0.38, 0.60, 0.80]){
   const at = PATH.getPointAt(u);
-  const m = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: mistTex, blending: THREE.AdditiveBlending, depthWrite: false,
-    transparent: true, opacity: 0.42 }));
-  m.scale.set(20, 11.2, 1);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(20, 11.2), keyedVideoMat(mistTex, 0.10, 1.1, 0.5));
   m.position.set(at.x, 1.6, at.z);
-  scene.add(m);
+  scene.add(m); mistPlanes.push(m);
 }
 
 /* ---------- hero diya ---------- */
@@ -360,9 +375,8 @@ const diya = new THREE.Group();
   }
   const bowl = new THREE.Mesh(new THREE.LatheGeometry(pts, 20),
     new THREE.MeshBasicMaterial({color:0x5A2E18}));
-  const flame = new THREE.Sprite(new THREE.SpriteMaterial({
-    map:flameTex, blending:THREE.AdditiveBlending, depthWrite:false}));
-  flame.scale.set(1.9, 1.07, 1); flame.position.y = 0.62;
+  const flame = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 1.07), keyedVideoMat(flameTex, 0.06, 1.35, 1.0));
+  flame.position.y = 0.62;
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({
     map:glowTex, color:0xFFC873, transparent:true, opacity:0.5,
     blending:THREE.AdditiveBlending, depthWrite:false}));
@@ -539,8 +553,9 @@ function film(clock){
   const far  = PATH.getPointAt(Math.min(1, u+0.05));
 
   diya.position.set(lead.x, 0.10 + Math.sin(clock*1.7)*0.02, lead.z);
-  diya.rotation.y = clock*0.12;
-  diya.userData.flame.material.opacity = 0.75 + Math.sin(clock*9)*0.12;
+  diya.rotation.set(0, 0, 0);
+  diya.userData.flame.quaternion.copy(cam.quaternion);
+  for (const m of mistPlanes) m.quaternion.copy(cam.quaternion);
 
   const introT = 1 - smooth(seg(p, 0.0, 0.12));
   const arrive = smooth(seg(p, 0.78, 0.97));
