@@ -216,8 +216,8 @@ if (!renderer){
 
 function init(renderer){
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x070a16);
-scene.fog = new THREE.FogExp2(0x070a16, 0.052);
+scene.background = new THREE.Color(0x04050d);
+scene.fog = new THREE.FogExp2(0x04050d, 0.060);
 const cam = new THREE.PerspectiveCamera(52, 1, 0.1, 260);
 renderer.setPixelRatio(Math.min(isMobile ? 1.5 : 2, devicePixelRatio));
 function fit(){ renderer.setSize(innerWidth, innerHeight, false);
@@ -303,25 +303,27 @@ scene.add(water);
   moon.scale.setScalar(16); moon.position.set(-26, 34, -150); scene.add(moon);
 }
 
-/* ---------- banks: instanced ghat blocks ---------- */
+/* ---------- banks: photographic haveli walls (painted world, not boxes) ---------- */
 {
-  const N = isMobile ? 90 : 150;
-  const im = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1,1,1),
-    new THREE.MeshBasicMaterial({color:0x10152B}), N*2);
-  const M = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3();
-  let k = 0;
+  const wallTex = new THREE.TextureLoader().load(
+    "https://antara-builds.github.io/dbl-demos/ghat-wall.png");
+  wallTex.colorSpace = THREE.SRGBColorSpace;
+  const SEG = 14, LEN = 14, Hh = 7.2;
   for (let side = -1; side <= 1; side += 2)
-    for (let i = 0; i < N; i++){
-      const u = i/N;
+    for (let i = 0; i < SEG; i++){
+      const u = (i + 0.5) / SEG;
       const at = PATH.getPointAt(u);
-      const h = 1.2 + Math.abs(Math.sin(i*7.7+side))*3.4;
-      const off = 6.2 + Math.abs(Math.sin(i*3.3))*2.2;
-      s.set(2.6+Math.abs(Math.sin(i*5.1))*2.4, h, 3.2);
-      M.compose(new THREE.Vector3(at.x + side*off, h/2 - 0.05, at.z), q, s);
-      im.setMatrixAt(k++, M);
+      const dir = PATH.getPointAt(Math.min(1, u + 0.01)).clone().sub(at).normalize();
+      const right = new THREE.Vector3(-dir.z, 0, dir.x);
+      const m = new THREE.Mesh(
+        new THREE.PlaneGeometry(LEN, Hh),
+        new THREE.MeshBasicMaterial({map: wallTex, transparent: true, depthWrite: false}));
+      m.position.copy(at).addScaledVector(right, side * (6.8 + Math.sin(i * 3.1) * 0.8));
+      m.position.y = Hh / 2 - 0.35;
+      m.lookAt(m.position.clone().sub(right.clone().multiplyScalar(side)));
+      if (side > 0) m.scale.x = -1;              // mirror so lit windows vary
+      scene.add(m);
     }
-  scene.add(im);
 }
 
 /* ---------- video loops: black-background clips + additive blending = free luma key ---------- */
@@ -448,25 +450,26 @@ GATE_U.forEach((u, i) => {
   const ahead = PATH.getPointAt(Math.min(1,u+0.01));
   const dir = ahead.clone().sub(at).normalize();
   const right = new THREE.Vector3(-dir.z, 0, dir.x);
-  const postMat = new THREE.MeshBasicMaterial({color:0x1B2240});
-  for (const sgn of [-1,1]){
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,4.6,8), postMat);
-    post.position.copy(at).addScaledVector(right, sgn*3.1); post.position.y = 2.3;
-    scene.add(post);
+  if (!window.__archTex){
+    window.__archTex = new THREE.TextureLoader().load(
+      "https://antara-builds.github.io/dbl-demos/garland-arch.png");
+    window.__archTex.colorSpace = THREE.SRGBColorSpace;
   }
-  const beads = new THREE.InstancedMesh(
-    new THREE.SphereGeometry(0.09, 6, 6),
-    new THREE.MeshBasicMaterial({color:0xE08A2B}), 26);
-  const M = new THREE.Matrix4();
-  for (let b = 0; b < 26; b++){
-    const t = b/25;
-    const pos = at.clone().addScaledVector(right, (t-0.5)*6.2);
-    pos.y = 4.35 - Math.sin(t*Math.PI)*0.9;
-    M.setPosition(pos); beads.setMatrixAt(b, M);
-  }
-  scene.add(beads);
+  const arch = new THREE.Mesh(
+    new THREE.PlaneGeometry(9.4, 14.1),
+    new THREE.MeshBasicMaterial({map: window.__archTex, transparent: true, depthWrite: false, side: THREE.DoubleSide}));
+  arch.position.copy(at); arch.position.y = 6.55;
+  const facing = at.clone().add(dir);
+  arch.lookAt(facing.x, 6.55, facing.z);
+  scene.add(arch);
+  /* a warm pool of light under each arch */
+  const pool = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: glowTex, color: 0xFFAE55, transparent: true, opacity: 0.5,
+    blending: THREE.AdditiveBlending, depthWrite: false}));
+  pool.scale.set(7.5, 3.4, 1); pool.position.copy(at); pool.position.y = 0.7;
+  scene.add(pool);
   const label = textSprite(EVENTS[i][0], EVENTS[i][1]);
-  label.position.copy(at); label.position.y = 2.6;
+  label.position.copy(at); label.position.y = 3.1;
   scene.add(label); gateLabels.push({label, u});
 });
 
@@ -607,7 +610,7 @@ function film(clock){
   }
 
   const dawn = smooth(seg(p, 0.9, 1));
-  scene.fog.color.setRGB(0.027+dawn*0.10, 0.039+dawn*0.055, 0.086+dawn*0.04);
+  scene.fog.color.setRGB(0.016+dawn*0.11, 0.020+dawn*0.06, 0.051+dawn*0.045);
   scene.background = scene.fog.color;
 }
 
