@@ -3,16 +3,83 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Diya's Journey — stage 1: the rig</title>
+<title>Elena &amp; Rohan — The Diya's Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{background:#05060E}
-#track{height:800vh}
+:root{--ink:#0B0E1C;--ivory:#F2EBDD;--dim:#B9B2A2;--gold:#C98A2B;--gold2:#E0B15F}
+html{scroll-behavior:auto}
+body{background:var(--ink);color:var(--ivory);font-family:"EB Garamond",Georgia,serif;overflow-x:hidden}
+#track{height:900vh}
 #gl{position:fixed;inset:0;z-index:1}
-#hud{position:fixed;left:10px;top:10px;z-index:10;font:12px/1.5 ui-monospace,monospace;
-  color:#9aa; background:rgba(5,6,14,.6);padding:6px 10px;border-radius:4px;pointer-events:none}
-#hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:10;
-  font:11px ui-sans-serif,system-ui;letter-spacing:.35em;text-transform:uppercase;color:#667}
+#grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.5;
+  background:radial-gradient(70% 55% at 50% 42%, transparent 55%, rgba(0,0,0,.5) 130%)}
+
+/* ---------- film text stations ---------- */
+.st{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
+  text-align:center;opacity:0;pointer-events:none;padding:0 8vw}
+.st .in{max-width:620px}
+.lbl{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.38em;
+  font-size:13px;color:var(--dim)}
+.names{font-family:"Marcellus",serif;font-size:clamp(44px,8.5vw,86px);line-height:1.1;letter-spacing:.06em;
+  text-shadow:0 2px 26px rgba(0,0,0,.6)}
+.ital{font-style:italic;font-size:clamp(19px,3.4vw,26px);line-height:1.5;color:var(--dim)}
+.gap>*+*{margin-top:22px}
+.hair{width:84px;height:1px;background:var(--gold);opacity:.85;margin:0 auto}
+.count{display:flex;gap:26px;justify-content:center}
+.count b{display:block;font-family:"Marcellus",serif;font-weight:400;font-size:44px;color:var(--gold2);
+  font-variant-numeric:tabular-nums;line-height:1}
+.count span{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.24em;font-size:11px;color:var(--dim)}
+.btn{display:inline-block;padding:15px 40px;border:1px solid rgba(224,177,95,.65);color:var(--gold2);
+  font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.34em;font-size:14px;
+  text-decoration:none;pointer-events:auto}
+.btn:hover{background:var(--gold);color:#1A1204}
+
+#hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:6;
+  font-family:"Marcellus",serif;font-size:11px;letter-spacing:.4em;text-transform:uppercase;
+  color:var(--dim);transition:opacity .6s;pointer-events:none}
+#hint::after{content:"";display:block;width:1px;height:34px;margin:10px auto 0;
+  background:linear-gradient(var(--gold),transparent);animation:drip 2s ease infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}60%{transform:scaleY(1)}100%{opacity:0}}
+#hint.off{opacity:0}
+#fast{position:fixed;right:16px;bottom:16px;z-index:30;background:rgba(11,14,28,.75);
+  border:1px solid rgba(224,177,95,.4);color:var(--dim);padding:10px 16px;cursor:pointer;
+  font-family:"Marcellus",serif;font-size:11px;letter-spacing:.28em;text-transform:uppercase}
+#fast:hover{color:var(--ivory)}
+#hud{position:fixed;left:10px;top:10px;z-index:40;font:11px ui-monospace,monospace;color:#788;
+  background:rgba(5,6,14,.55);padding:4px 8px;border-radius:4px;pointer-events:none;display:none}
+body.debug #hud{display:block}
+
+/* ---------- the harbour (epilogue) ---------- */
+#harbour{position:relative;z-index:8;background:
+  linear-gradient(180deg,#0B0E1C 0%,#131a30 34%,#3a2b3d 72%,#6E4A3E 100%)}
+#harbour section{padding:110px 0;text-align:center}
+.col{width:min(660px,90vw);margin:0 auto}
+.h-script{font-family:"Marcellus",serif;font-size:clamp(30px,5.4vw,44px);letter-spacing:.06em}
+.blocks>*+*{margin-top:52px}
+.stack>*+*{margin-top:18px}
+.cards{display:grid;grid-template-columns:1fr;gap:20px;text-align:left}
+@media(min-width:640px){.cards{grid-template-columns:1fr 1fr}}
+.card{border:1px solid rgba(242,235,221,.2);padding:26px 24px;background:rgba(11,14,28,.35)}
+.card h4{font-family:"Marcellus",serif;font-weight:400;font-size:22px;margin-bottom:10px}
+.card p{font-size:16px;color:var(--dim);line-height:1.55;white-space:pre-line}
+.qa{display:grid;grid-template-columns:1fr;gap:22px;text-align:left}
+@media(min-width:640px){.qa{grid-template-columns:1fr 1fr}}
+.qa dt{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.2em;font-size:12px;
+  color:var(--gold2);margin-bottom:6px}
+.qa dd{font-size:16px;color:var(--dim);font-style:italic}
+.rv{opacity:0;transform:translateY(26px) perspective(700px) rotateX(4deg);
+  transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+footer{padding:80px 0;text-align:center}
+#harbour .dawn{color:#F7E9D4}
+@media (prefers-reduced-motion:reduce){
+  #gl,#track,#hint{display:none}
+  .st{display:none}
+  .rv{opacity:1;transform:none;transition:none}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -23,147 +90,543 @@ html,body{background:#05060E}
 </head>
 <body>
 <canvas id="gl"></canvas>
+<div id="grain"></div>
 <div id="track"></div>
-<div id="hud">p 0.000 · fps —</div>
+<div id="hud">p — · fps —</div>
 <div id="hint">Scroll</div>
+<button id="fast" title="Skip to the details">Details ↓</button>
+
+<!-- ============ film stations ============ -->
+<section class="st" data-c="0.045" data-w="0.09">
+  <div class="in gap">
+    <p class="lbl">Together with their families</p>
+    <h1 class="names">Elena &amp; Rohan</h1>
+    <div class="hair"></div>
+    <p class="lbl">14 February 2027 · Udaipur, India</p>
+  </div>
+</section>
+<section class="st" data-c="0.13" data-w="0.08">
+  <div class="in gap">
+    <p class="ital">A diya set on the water carries a wish to the far bank.
+      Ours is that you will be with us. Follow it down the river.</p>
+  </div>
+</section>
+<section class="st" data-c="0.21" data-w="0.07">
+  <div class="in gap"><p class="lbl">How we met</p>
+  <p class="ital">A delayed train, one shared plug socket, and four hours neither of us would give back.</p></div>
+</section>
+<section class="st" data-c="0.28" data-w="0.07">
+  <div class="in gap"><p class="lbl">The proposal</p>
+  <p class="ital">On the roof, the night the power failed across the whole street. The dark was better.</p></div>
+</section>
+<section class="st" data-c="0.75" data-w="0.06">
+  <div class="in gap"><p class="lbl">Almost there</p></div>
+</section>
+<section class="st" data-c="0.90" data-w="0.11">
+  <div class="in gap">
+    <p class="lbl">Kindly reply by 20 December 2026</p>
+    <div class="count">
+      <div><b id="cd-d">—</b><span>days</span></div>
+      <div><b id="cd-h">—</b><span>hours</span></div>
+      <div><b id="cd-m">—</b><span>min</span></div>
+    </div>
+    <p><a class="btn" href="#" id="rsvp-btn">RSVP</a></p>
+  </div>
+</section>
+
+<!-- ============ the harbour ============ -->
+<div id="harbour">
+  <section><div class="col blocks">
+    <div class="stack rv"><p class="lbl">The details</p><h2 class="h-script">Where &amp; when</h2><div class="hair"></div></div>
+    <div class="cards">
+      <div class="card rv"><h4>Ceremony</h4><p>4:30 pm · 14 February
+The City Palace, Zenana Mahal
+Old City, Udaipur 313001</p></div>
+      <div class="card rv"><h4>Reception</h4><p>7:30 pm · 14 February
+Jagmandir Island, Lake Pichola
+Boats from Bansi Ghat, 7:00 pm</p></div>
+    </div>
+    <div class="cards">
+      <div class="card rv"><h4>Mehendi · 10 Feb</h4><p>4:00 pm — Courtyard, Hotel Amet Haveli</p></div>
+      <div class="card rv"><h4>Haldi · 11 Feb</h4><p>10:00 am — At home</p></div>
+      <div class="card rv"><h4>Sangeet · 12 Feb</h4><p>8:00 pm — Durbar Hall</p></div>
+      <div class="card rv"><h4>Getting there</h4><p>Maharana Pratap airport, 30 minutes.
+No parking at the palace — take the shuttle.</p></div>
+    </div>
+  </div></section>
+
+  <section><div class="col blocks">
+    <div class="stack rv"><p class="lbl">Stay</p><h2 class="h-script">Where to stay</h2><div class="hair"></div></div>
+    <div class="cards">
+      <div class="card rv"><h4>Amet Haveli</h4><p>Outside Chandpole, Lake Pichola
+6-minute boat to the reception
++91 294 243 1085</p></div>
+      <div class="card rv"><h4>Hotel Lakend</h4><p>Alkapuri, Fateh Sagar Road
+12 minutes by car to the palace
++91 294 243 3006</p></div>
+    </div>
+    <p class="ital rv">Cars run between both hotels and every event. Say our names at the desk.</p>
+    <div class="stack rv"><p class="lbl">What to wear</p>
+      <p class="ital">Indian formal or black tie, comfortable shoes for the courtyard stone, and a
+      shawl — February nights by the lake are colder than they look.</p></div>
+    <dl class="qa">
+      <div class="rv"><dt>Children</dt><dd>Very welcome at every event except the sangeet.</dd></div>
+      <div class="rv"><dt>Weather</dt><dd>24°C by day, 11°C after dark. Every year, without fail.</dd></div>
+      <div class="rv"><dt>Shuttle</dt><dd>Runs from both hotels 45 minutes before each event.</dd></div>
+      <div class="rv"><dt>Questions</dt><dd>elena.rohan@example.com — we answer fast.</dd></div>
+    </dl>
+  </div></section>
+
+  <section><div class="col stack">
+    <p class="lbl dawn rv">Kindly reply by 20 December 2026</p>
+    <p class="rv"><a class="btn" href="#">RSVP</a></p>
+    <p class="ital rv" style="color:#D9BFA8">or write to elena.rohan@example.com</p>
+  </div></section>
+  <footer><div class="col">
+    <p class="h-script dawn">Elena &amp; Rohan</p>
+  </div></footer>
+</div>
 
 <script type="module">
-/* ============ STAGE 1 — THE RIG ============
-   Judged on one thing only: does scrubbing feel buttery, forwards and backwards.
-   A placeholder diya (glowing box) rides a spline; the camera follows a second
-   spline and looks slightly ahead. Everything is a pure function of p. */
+/* ============================================================
+   THE DIYA'S JOURNEY — the complete film.
+   All film motion is a pure function of p (scrubs both ways).
+   Ambient flicker/drift may use the clock (decorative only).
+   ============================================================ */
 import * as THREE from "three";
 
-const canvas = document.getElementById("gl");
-const renderer = new THREE.WebGLRenderer({canvas, antialias:true, preserveDrawingBuffer:true});
-renderer.setPixelRatio(Math.min(2, devicePixelRatio));
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x05060e);
-scene.fog = new THREE.FogExp2(0x05060e, 0.055);
-const cam = new THREE.PerspectiveCamera(52, 1, 0.1, 200);
+const isMobile = innerWidth < 700;
+const Q = new URLSearchParams(location.search);
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function fit(){
-  renderer.setSize(innerWidth, innerHeight, false);
-  cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix();
+const canvas = document.getElementById("gl");
+let renderer = null;
+if (!reduced){
+  try { renderer = new THREE.WebGLRenderer({canvas, antialias:!isMobile, preserveDrawingBuffer:true}); }
+  catch(e){ renderer = null; }
 }
+if (!renderer){
+  document.getElementById("track").style.display = "none";
+  canvas.style.display = "none";
+  document.getElementById("hint").style.display = "none";
+  document.querySelectorAll(".st").forEach(s => s.style.display = "none");
+} else {
+  init(renderer);
+}
+
+function init(renderer){
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x070a16);
+scene.fog = new THREE.FogExp2(0x070a16, 0.052);
+const cam = new THREE.PerspectiveCamera(52, 1, 0.1, 260);
+renderer.setPixelRatio(Math.min(isMobile ? 1.5 : 2, devicePixelRatio));
+function fit(){ renderer.setSize(innerWidth, innerHeight, false);
+  cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix(); }
 addEventListener("resize", fit); fit();
 
-/* ---- the river path: a gentle meander down -Z ---- */
-const bend = (z, amp) => new THREE.Vector3(amp, 0, z);
-const PATH = new THREE.CatmullRomCurve3([
-  bend(  0,  0), bend(-14, 3.2), bend(-28, -4.0), bend(-44, 2.2),
-  bend(-60, -3.4), bend(-76, 1.6), bend(-92, -2.0), bend(-108, 0),
-], false, "catmullrom", 0.6);
+/* ---------- helpers ---------- */
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const smooth = t => { t = clamp01(t); return t*t*(3-2*t); };
+const seg = (p, a, b) => clamp01((p-a)/(b-a));
+function canvasTex(draw, w=128, h=128){
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  draw(c.getContext("2d"), w, h);
+  const t = new THREE.CanvasTexture(c); t.anisotropy = 2; return t;
+}
+const glowTex = canvasTex((x,w,h) => {
+  const g = x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
+  g.addColorStop(0,"rgba(255,224,170,1)"); g.addColorStop(.4,"rgba(255,190,110,.32)");
+  g.addColorStop(1,"rgba(255,190,110,0)");
+  x.fillStyle = g; x.fillRect(0,0,w,h);
+});
+const petalTex = canvasTex((x,w,h) => {
+  x.translate(w/2,h/2); x.fillStyle = "#D98E33";
+  x.beginPath(); x.moveTo(0,-h*0.42);
+  x.quadraticCurveTo(w*0.34,-h*0.08,0,h*0.42);
+  x.quadraticCurveTo(-w*0.34,-h*0.08,0,-h*0.42); x.fill();
+});
 
-/* ---- placeholder water: a dark plane with a dot grid so motion is visible ---- */
+/* ---------- river path ---------- */
+const bend = (z, x) => new THREE.Vector3(x, 0, z);
+const PATH = new THREE.CatmullRomCurve3([
+  bend(6,0), bend(-10,2.8), bend(-26,-3.6), bend(-42,2.4), bend(-58,-3.2),
+  bend(-74,1.8), bend(-90,-2.2), bend(-104,0), bend(-118,0),
+], false, "catmullrom", 0.55);
+
+/* ---------- water ---------- */
+const water = new THREE.Mesh(
+  new THREE.PlaneGeometry(90, 300, 48, 160),
+  new THREE.ShaderMaterial({
+    fog: true,
+    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, { uT: {value:0} }]),
+    vertexShader: `
+      uniform float uT; varying vec2 vUv; varying float vH;
+      #include <fog_pars_vertex>
+      void main(){
+        vUv = uv;
+        vec3 p = position;
+        float w1 = sin(p.x*1.7 + uT*0.9)*0.024;
+        float w2 = sin((p.x+p.y)*0.8 - uT*0.6)*0.03;
+        p.z += w1 + w2;
+        vH = w1 + w2;
+        vec4 mvPosition = modelViewMatrix * vec4(p,1.0);
+        gl_Position = projectionMatrix * mvPosition;
+        #include <fog_vertex>
+      }`,
+    fragmentShader: `
+      varying vec2 vUv; varying float vH;
+      #include <fog_pars_fragment>
+      void main(){
+        vec3 deep = vec3(0.030,0.040,0.085);
+        vec3 lift = vec3(0.075,0.095,0.16);
+        vec3 col = mix(deep, lift, clamp(vH*14.0+0.35,0.0,1.0));
+        float lane = smoothstep(0.5,0.0,abs(vUv.x-0.5));
+        col += vec3(0.10,0.085,0.05)*lane*0.35;
+        gl_FragColor = vec4(col,1.0);
+        #include <fog_fragment>
+      }`,
+  }));
+water.rotation.x = -Math.PI/2; water.position.set(0,0,-110);
+scene.add(water);
+
+/* ---------- sky ---------- */
 {
-  const g = new THREE.PlaneGeometry(80, 260, 1, 1);
-  const m = new THREE.MeshBasicMaterial({color:0x0a0e1e});
-  const water = new THREE.Mesh(g, m);
-  water.rotation.x = -Math.PI/2; water.position.set(0, -0.001, -100);
-  scene.add(water);
-  const dots = new THREE.BufferGeometry();
-  const P = [];
-  for (let i = 0; i < 1600; i++)
-    P.push((Math.random()-0.5)*60, 0.01, -Math.random()*240);
-  dots.setAttribute("position", new THREE.Float32BufferAttribute(P, 3));
-  scene.add(new THREE.Points(dots, new THREE.PointsMaterial({color:0x2a3352, size:0.06})));
+  const g = new THREE.BufferGeometry(), P = [];
+  for (let i = 0; i < (isMobile?260:420); i++){
+    const r = 110 + Math.random()*60, a = Math.random()*Math.PI*2;
+    P.push(Math.cos(a)*r, 14 + Math.random()*70, -100 + Math.sin(a)*r*0.8);
+  }
+  g.setAttribute("position", new THREE.Float32BufferAttribute(P,3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({
+    color:0xC9CFE2, size:0.42, transparent:true, opacity:0.8, fog:false})));
+  const moon = new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex, color:0xE8E4D2, fog:false}));
+  moon.scale.setScalar(16); moon.position.set(-26, 34, -150); scene.add(moon);
 }
 
-/* ---- placeholder diya: a warm glowing box + halo sprite ---- */
+/* ---------- banks: instanced ghat blocks ---------- */
+{
+  const N = isMobile ? 90 : 150;
+  const im = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(1,1,1),
+    new THREE.MeshBasicMaterial({color:0x10152B}), N*2);
+  const M = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3();
+  let k = 0;
+  for (let side = -1; side <= 1; side += 2)
+    for (let i = 0; i < N; i++){
+      const u = i/N;
+      const at = PATH.getPointAt(u);
+      const h = 1.2 + Math.abs(Math.sin(i*7.7+side))*3.4;
+      const off = 6.2 + Math.abs(Math.sin(i*3.3))*2.2;
+      s.set(2.6+Math.abs(Math.sin(i*5.1))*2.4, h, 3.2);
+      M.compose(new THREE.Vector3(at.x + side*off, h/2 - 0.05, at.z), q, s);
+      im.setMatrixAt(k++, M);
+    }
+  scene.add(im);
+}
+
+/* ---------- hero diya ---------- */
 const diya = new THREE.Group();
 {
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(0.5, 0.22, 0.5),
-    new THREE.MeshBasicMaterial({color:0xc98a2b}));
+  const pts = [];
+  for (let i = 0; i <= 8; i++){
+    const t = i/8;
+    pts.push(new THREE.Vector2(0.05 + Math.sin(t*Math.PI*0.62)*0.30, t*0.18));
+  }
+  const bowl = new THREE.Mesh(new THREE.LatheGeometry(pts, 20),
+    new THREE.MeshBasicMaterial({color:0x5A2E18}));
+  const flame = new THREE.Sprite(new THREE.SpriteMaterial({
+    map:glowTex, color:0xFFD08A, blending:THREE.AdditiveBlending, depthWrite:false}));
+  flame.scale.setScalar(0.9); flame.position.y = 0.34;
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTexture(), color:0xffc873, transparent:true,
+    map:glowTex, color:0xFFC873, transparent:true, opacity:0.5,
     blending:THREE.AdditiveBlending, depthWrite:false}));
-  halo.scale.setScalar(3.2); halo.position.y = 0.35;
-  diya.add(body, halo);
+  halo.scale.setScalar(3.4); halo.position.y = 0.4;
+  diya.add(bowl, flame, halo);
+  diya.userData = {flame};
   scene.add(diya);
 }
-function glowTexture(){
-  const c = document.createElement("canvas"); c.width = c.height = 128;
-  const x = c.getContext("2d");
-  const g = x.createRadialGradient(64,64,0,64,64,64);
-  g.addColorStop(0,"rgba(255,220,160,1)"); g.addColorStop(0.35,"rgba(255,190,110,.35)");
-  g.addColorStop(1,"rgba(255,190,110,0)");
-  x.fillStyle = g; x.fillRect(0,0,128,128);
-  return new THREE.CanvasTexture(c);
+
+/* ---------- companion lamps ---------- */
+{
+  const N = isMobile ? 60 : 120;
+  const g = new THREE.BufferGeometry(), P = [];
+  for (let i = 0; i < N; i++){
+    const at = PATH.getPointAt(Math.random());
+    P.push(at.x + (Math.random()-0.5)*7, 0.1, at.z + (Math.random()-0.5)*9);
+  }
+  g.setAttribute("position", new THREE.Float32BufferAttribute(P,3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({
+    map:glowTex, color:0xFFB765, size:1.5, transparent:true, opacity:.85,
+    blending:THREE.AdditiveBlending, depthWrite:false})));
 }
 
-/* ---- gate markers every 12 units so speed is readable in stage 1 ---- */
-for (let z = -12; z > -100; z -= 12){
-  const u = clamp01(-z/108);
+/* ---------- petals + fireflies (ambient) ---------- */
+const petals = (() => {
+  const N = isMobile ? 90 : 170;
+  const im = new THREE.InstancedMesh(
+    new THREE.PlaneGeometry(0.16,0.16),
+    new THREE.MeshBasicMaterial({map:petalTex, transparent:true, side:THREE.DoubleSide, depthWrite:false}), N);
+  im.userData.seed = Array.from({length:N}, () => ({
+    u: Math.random(), r: (Math.random()-0.5)*8, y: 0.15+Math.random()*2.6,
+    ph: Math.random()*6.28, sp: 0.4+Math.random()*0.8 }));
+  scene.add(im); return im;
+})();
+const flies = (() => {
+  const N = isMobile ? 40 : 80;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(N*3),3));
+  const pts = new THREE.Points(g, new THREE.PointsMaterial({
+    map:glowTex, color:0xB8D48A, size:0.5, transparent:true, opacity:.7,
+    blending:THREE.AdditiveBlending, depthWrite:false}));
+  pts.userData.seed = Array.from({length:N}, () => ({
+    u: Math.random(), r: 5 + Math.random()*4, side: Math.random()<0.5?-1:1,
+    ph: Math.random()*6.28, y: 0.6+Math.random()*3 }));
+  scene.add(pts); return pts;
+})();
+
+/* ---------- five garland gates ---------- */
+const EVENTS = [
+  ["Mehendi","10 Feb · 4:00 pm"], ["Haldi","11 Feb · 10:00 am"],
+  ["Sangeet","12 Feb · 8:00 pm"], ["The Ceremony","14 Feb · 4:30 pm"],
+  ["Reception","14 Feb · 7:30 pm"],
+];
+const GATE_U = [0.34, 0.43, 0.52, 0.61, 0.70];
+function textSprite(title, sub){
+  const t = canvasTex((x,w,h) => {
+    x.textAlign = "center"; x.fillStyle = "#F2EBDD";
+    x.font = "44px Marcellus, Georgia, serif";
+    x.fillText(title, w/2, h/2 - 10);
+    x.fillStyle = "#E0B15F"; x.font = "21px Marcellus, Georgia, serif";
+    x.fillText(sub.toUpperCase().split("").join(" "), w/2, h/2 + 32);
+  }, 512, 160);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:t, transparent:true, depthWrite:false}));
+  sp.scale.set(6.4, 2.0, 1); return sp;
+}
+const gateLabels = [];
+GATE_U.forEach((u, i) => {
   const at = PATH.getPointAt(u);
-  const post = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.06, 0.06, 3, 6),
-    new THREE.MeshBasicMaterial({color:0x27304e}));
-  post.position.set(at.x + 2.4, 1.5, at.z);
-  const post2 = post.clone(); post2.position.x = at.x - 2.4;
-  scene.add(post, post2);
-}
-function clamp01(v){ return Math.min(1, Math.max(0, v)); }
+  const ahead = PATH.getPointAt(Math.min(1,u+0.01));
+  const dir = ahead.clone().sub(at).normalize();
+  const right = new THREE.Vector3(-dir.z, 0, dir.x);
+  const postMat = new THREE.MeshBasicMaterial({color:0x1B2240});
+  for (const sgn of [-1,1]){
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,4.6,8), postMat);
+    post.position.copy(at).addScaledVector(right, sgn*3.1); post.position.y = 2.3;
+    scene.add(post);
+  }
+  const beads = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.09, 6, 6),
+    new THREE.MeshBasicMaterial({color:0xE08A2B}), 26);
+  const M = new THREE.Matrix4();
+  for (let b = 0; b < 26; b++){
+    const t = b/25;
+    const pos = at.clone().addScaledVector(right, (t-0.5)*6.2);
+    pos.y = 4.35 - Math.sin(t*Math.PI)*0.9;
+    M.setPosition(pos); beads.setMatrixAt(b, M);
+  }
+  scene.add(beads);
+  const label = textSprite(EVENTS[i][0], EVENTS[i][1]);
+  label.position.copy(at); label.position.y = 2.6;
+  scene.add(label); gateLabels.push({label, u});
+});
 
-/* ---- the scrub: Lenis feeds ScrollTrigger; p drives the world ---- */
+/* ---------- palace (matte plate) ---------- */
+const palace = (() => {
+  /* the plate must dissolve into the night: draw it into a canvas with an
+     alpha falloff on every edge, so no rectangle ever shows */
+  const end = PATH.getPointAt(1);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(46, 69),
+    new THREE.MeshBasicMaterial({transparent:true, opacity:0, fog:false}));
+  mesh.position.set(end.x, 16, end.z - 34);
+  new THREE.ImageLoader().setCrossOrigin("anonymous").load(
+    "https://antara-builds.github.io/dbl-demos/ink-envelope-bg.jpg", img => {
+      const c = document.createElement("canvas");
+      c.width = 1024; c.height = 1536;
+      const x = c.getContext("2d");
+      x.drawImage(img, 0, 0, c.width, c.height);
+      x.globalCompositeOperation = "destination-in";
+      const gx = x.createLinearGradient(0,0,c.width,0);
+      gx.addColorStop(0,"rgba(0,0,0,0)"); gx.addColorStop(0.22,"rgba(0,0,0,1)");
+      gx.addColorStop(0.78,"rgba(0,0,0,1)"); gx.addColorStop(1,"rgba(0,0,0,0)");
+      x.fillStyle = gx; x.fillRect(0,0,c.width,c.height);
+      const gy = x.createLinearGradient(0,0,0,c.height);
+      gy.addColorStop(0,"rgba(0,0,0,0)"); gy.addColorStop(0.30,"rgba(0,0,0,1)");
+      gy.addColorStop(0.92,"rgba(0,0,0,1)"); gy.addColorStop(1,"rgba(0,0,0,0)");
+      x.fillStyle = gy; x.fillRect(0,0,c.width,c.height);
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      mesh.material.map = t; mesh.material.needsUpdate = true;
+    });
+  scene.add(mesh); return mesh;
+})();
+
+/* ---------- the card ---------- */
+const card = (() => {
+  const t = canvasTex((x,w,h) => {
+    x.fillStyle = "#F2EBDD"; x.fillRect(0,0,w,h);
+    x.strokeStyle = "#C98A2B"; x.lineWidth = 5; x.strokeRect(22,22,w-44,h-44);
+    x.textAlign = "center"; x.fillStyle = "#171A2E";
+    x.font = "58px Marcellus, Georgia, serif";
+    x.fillText("Elena & Rohan", w/2, h/2 - 26);
+    x.fillStyle = "#8A5E2B"; x.font = "26px Marcellus, Georgia, serif";
+    x.fillText("14 · 02 · 2027  —  UDAIPUR", w/2, h/2 + 34);
+    x.font = "italic 24px Georgia, serif"; x.fillStyle = "#4A4437";
+    x.fillText("You are warmly invited", w/2, h/2 + 86);
+  }, 640, 400);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(3.2, 2.0),
+    new THREE.MeshBasicMaterial({map:t, transparent:true, opacity:0, side:THREE.DoubleSide}));
+  scene.add(mesh); return mesh;
+})();
+
+/* ---------- scrub plumbing ---------- */
 let p = 0;
-const lenis = new Lenis({lerp: 0.09, wheelMultiplier: 0.9});
-window.__lenis = lenis;                                  // QA handle
+const lenis = new Lenis({lerp:0.09, wheelMultiplier:0.92});
+window.__lenis = lenis;
 lenis.on("scroll", ScrollTrigger.update);
 gsap.ticker.add(t => lenis.raf(t*1000));
 gsap.ticker.lagSmoothing(0);
 gsap.registerPlugin(ScrollTrigger);
-ScrollTrigger.create({
-  trigger: "#track", start: "top top", end: "bottom bottom",
-  scrub: true,
-  onUpdate: self => { p = self.progress; }
-});
+ScrollTrigger.create({trigger:"#track", start:"top top", end:"bottom bottom",
+  scrub:true, onUpdate: self => { p = self.progress; }});
 
-/* ---- camera rig: pure f(p) ---- */
-const easeP = t => t;                                     // stage 1: linear; shape later
-function rig(){
-  const u  = easeP(p) * 0.96;
-  const at = PATH.getPointAt(u);
-  const ahead = PATH.getPointAt(Math.min(1, u + 0.012));
-  const far   = PATH.getPointAt(Math.min(1, u + 0.05));
-  diya.position.set(ahead.x, 0.12 + Math.sin(p*60)*0.015, ahead.z);
-  const back = at.clone().sub(far).normalize().multiplyScalar(3.4);
-  cam.position.set(at.x + back.x, 1.55, at.z + back.z);
-  cam.lookAt(far.x, 0.4, far.z);
+/* ---------- film stations ---------- */
+const stations = [...document.querySelectorAll(".st")];
+function placeStations(){
+  for (const st of stations){
+    const c = +st.dataset.c, w = +st.dataset.w;
+    const v = smooth(Math.max(0, 1 - Math.abs(p-c)/(w/2)));
+    st.style.opacity = v;
+    st.style.pointerEvents = v > 0.5 ? "auto" : "none";
+    st.style.transform = `translateY(${(p-c)*-140}px)`;
+  }
 }
 
-/* ---- loop + hud ---- */
+/* ---------- the film, all f(p) ---------- */
+const CAM_END = 0.86;
+function film(clock){
+  const travel = smooth(seg(p, 0.06, CAM_END));
+  const u = 0.02 + travel*0.93;
+  const at   = PATH.getPointAt(u);
+  const lead = PATH.getPointAt(Math.min(1, u+0.012));
+  const far  = PATH.getPointAt(Math.min(1, u+0.05));
+
+  diya.position.set(lead.x, 0.10 + Math.sin(clock*1.7)*0.02, lead.z);
+  diya.rotation.y = clock*0.12;
+  diya.userData.flame.material.opacity = 0.75 + Math.sin(clock*9)*0.12;
+
+  const introT = 1 - smooth(seg(p, 0.0, 0.12));
+  const arrive = smooth(seg(p, 0.78, 0.97));
+  const back = at.clone().sub(far).normalize().multiplyScalar(3.5 + introT*1.6);
+  cam.position.set(at.x + back.x, 1.5 + introT*1.5 + arrive*2.6, at.z + back.z);
+  cam.lookAt(far.x, 0.4 + arrive*7.5, far.z - arrive*16);
+
+  water.material.uniforms.uT.value = clock*0.7 + travel*26;
+
+  {
+    const M = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+    petals.userData.seed.forEach((s, i) => {
+      const su = (s.u + clock*0.004*s.sp) % 1;
+      const a = PATH.getPointAt(su);
+      e.set(Math.sin(clock*s.sp+s.ph)*0.8, clock*0.3*s.sp+s.ph, 0);
+      q.setFromEuler(e);
+      M.compose(new THREE.Vector3(a.x+s.r, s.y + Math.sin(clock*0.7+s.ph)*0.3, a.z), q,
+        new THREE.Vector3(1,1,1));
+      petals.setMatrixAt(i, M);
+    });
+    petals.instanceMatrix.needsUpdate = true;
+  }
+  {
+    const posAttr = flies.geometry.attributes.position;
+    flies.userData.seed.forEach((s, i) => {
+      const a = PATH.getPointAt(s.u);
+      posAttr.setXYZ(i,
+        a.x + s.side*(s.r + Math.sin(clock*0.5+s.ph)*1.2),
+        s.y + Math.sin(clock*0.9+s.ph*2)*0.5,
+        a.z + Math.cos(clock*0.4+s.ph)*1.5);
+    });
+    posAttr.needsUpdate = true;
+  }
+
+  for (const g of gateLabels){
+    const d = (g.u - u)/0.10;
+    g.label.material.opacity = d > 0 ? smooth(clamp01(1.6 - Math.abs(d-0.55)*2.4)) : 0;
+  }
+
+  palace.material.opacity = smooth(seg(p, 0.66, 0.80)) * 0.92;
+
+  {
+    const rise = smooth(seg(p, 0.80, 0.88));
+    const end = PATH.getPointAt(Math.min(1, u+0.035));
+    card.position.set(end.x, -1.2 + rise*3.0, end.z);
+    card.quaternion.copy(cam.quaternion);
+    card.material.opacity = rise * smooth(1 - seg(p, 0.955, 1));
+    card.scale.setScalar(0.6 + rise*0.5);
+  }
+
+  const dawn = smooth(seg(p, 0.9, 1));
+  scene.fog.color.setRGB(0.027+dawn*0.10, 0.039+dawn*0.055, 0.086+dawn*0.04);
+  scene.background = scene.fog.color;
+}
+
+/* ---------- loop ---------- */
 const hud = document.getElementById("hud");
-let frames = 0, last = performance.now(), fps = 0;
+if (Q.has("debug")) document.body.classList.add("debug");
+let frames = 0, lastT = performance.now();
 renderer.setAnimationLoop(() => {
-  rig();
+  const clock = performance.now()/1000;
+  film(clock); placeStations();
   renderer.render(scene, cam);
+  document.getElementById("hint").classList.toggle("off", scrollY > 60);
   frames++;
   const now = performance.now();
-  if (now - last > 500){
-    fps = Math.round(frames*1000/(now-last)); frames = 0; last = now;
-    hud.textContent = `p ${p.toFixed(3)} · fps ${fps}`;
+  if (now - lastT > 500){
+    hud.textContent = `p ${p.toFixed(3)} · fps ${Math.round(frames*1000/(now-lastT))}`;
+    frames = 0; lastT = now;
   }
 });
 
-/* ---- QA: deterministic single-frame render, immune to rAF throttling.
-   Everything is f(p), so one direct call draws the exact frame. ---- */
+/* ---------- QA: deterministic frame ---------- */
 window.__setP = v => {
-  p = Math.min(1, Math.max(0, v));
-  rig();
+  p = clamp01(v);
+  film(2.5); placeStations();
   renderer.render(scene, cam);
   hud.textContent = `p ${p.toFixed(3)} · direct`;
   return p;
 };
+if (Q.get("p")) requestAnimationFrame(() => {
+  const y = (document.getElementById("track").offsetHeight - innerHeight) * parseFloat(Q.get("p"));
+  lenis.scrollTo(y, {immediate:true});
+  window.__setP(parseFloat(Q.get("p")));
+});
+} /* end init */
 
-/* ---- QA: ?p=0.5 jumps the film ---- */
-const Q = new URLSearchParams(location.search);
-if (Q.get("p")){
-  const target = parseFloat(Q.get("p")) *
-    (document.getElementById("track").offsetHeight - innerHeight);
-  requestAnimationFrame(() => lenis.scrollTo(target, {immediate:true}));
+/* ---------- shared: countdown, reveals, fast travel ---------- */
+{
+  const t = new Date("2027-02-14T16:30:00+05:30").getTime();
+  const tick = () => {
+    const d = Math.max(0, t - Date.now());
+    const set = (id,v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set("cd-d", Math.floor(d/864e5));
+    set("cd-h", String(Math.floor(d/36e5)%24).padStart(2,"0"));
+    set("cd-m", String(Math.floor(d/6e4)%60).padStart(2,"0"));
+  };
+  tick(); setInterval(tick, 30000);
 }
+{
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add("in");
+  }), {threshold: 0.15});
+  document.querySelectorAll(".rv").forEach((el, i) => {
+    el.style.transitionDelay = (i%4)*90 + "ms"; io.observe(el);
+  });
+}
+document.getElementById("fast").addEventListener("click", () => {
+  const y = document.getElementById("harbour").offsetTop;
+  window.__lenis ? window.__lenis.scrollTo(y, {duration: 1.2}) : scrollTo(0, y);
+  localStorage.setItem("dj_visited", "1");
+});
 </script>
 </body>
 </html>
