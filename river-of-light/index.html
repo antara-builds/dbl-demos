@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elena &amp; Rohan — A River of Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+
+<!-- ================= EVERYTHING THE COUPLE EDITS LIVES HERE =================
+     Open this file with ?edit added to the address to use the visual editor.
+     Nothing below this block needs touching. -->
+<script id="cfg" type="application/json">
+{
+ "names": "Elena & Rohan",
+ "tagline": "Together with their families",
+ "iso": "2027-02-14T16:30:00+05:30",
+ "dateLine": "14 February 2027",
+ "city": "Udaipur",
+ "stHaldi": "Haldi · the golden morning",
+ "stFeast": "Dinner under the lights",
+ "stPheras": "Seven vows around the fire",
+ "stPalace": "The celebration begins",
+ "stFirstlight": "And a new life begins — RSVP below",
+ "events": [
+  {"label":"Mehendi","date":"10 Feb","time":"4:00 pm","venue":"Courtyard, Hotel Amet Haveli"},
+  {"label":"Haldi","date":"11 Feb","time":"10:00 am","venue":"At home"},
+  {"label":"Sangeet","date":"12 Feb","time":"8:00 pm","venue":"Durbar Hall"},
+  {"label":"The Ceremony","date":"14 Feb","time":"4:30 pm","venue":"The City Palace, Zenana Mahal\nOld City, Udaipur 313001"},
+  {"label":"Reception","date":"14 Feb","time":"7:30 pm","venue":"Jagmandir Island, Lake Pichola\nBoats from Bansi Ghat, 7:00 pm"}
+ ],
+ "travel": "Maharana Pratap airport, 30 minutes.\nNo parking at the palace — take the shuttle.",
+ "hotels": [
+  {"name":"Amet Haveli","lines":"Outside Chandpole, Lake Pichola\n6-minute boat to the reception","phone":"+91 294 243 1085"},
+  {"name":"Hotel Lakend","lines":"Alkapuri, Fateh Sagar Road\n12 minutes by car to the palace","phone":"+91 294 243 3006"}
+ ],
+ "hotelNote": "Cars run between both hotels and every event. Say our names at the desk.",
+ "wear": "Indian formal or black tie, comfortable shoes for the courtyard stone, and a shawl — February nights by the lake are colder than they look.",
+ "faqs": [
+  {"q":"Children","a":"Very welcome at every event except the sangeet."},
+  {"q":"Weather","a":"24°C by day, 11°C after dark. Every year, without fail."},
+  {"q":"Shuttle","a":"Runs from both hotels 45 minutes before each event."},
+  {"q":"Questions","a":"elena.rohan@example.com — we answer fast."}
+ ],
+ "rsvpUrl": "#",
+ "rsvpBy": "20 December 2026",
+ "email": "elena.rohan@example.com"
+}
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#04050d;--ivory:#F2EBDD;--dim:#B9B2A2;--gold:#C98A2B;--gold2:#E0B15F}
+body{background:var(--ink);color:var(--ivory);font-family:"EB Garamond",Georgia,serif;overflow-x:hidden}
+#track{height:1400vh}
+#film{position:fixed;inset:0;z-index:1;width:100%;height:100%;object-fit:cover}
+#grade{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(75% 60% at 50% 45%, transparent 50%, rgba(2,3,8,.55) 120%)}
+
+/* ---------- film text stations ---------- */
+.st{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
+  text-align:center;opacity:0;pointer-events:none;padding:0 8vw}
+.st .in{max-width:640px}
+.lbl{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.38em;font-size:13px;color:var(--dim)}
+.names{font-family:"Marcellus",serif;font-size:clamp(44px,8vw,84px);letter-spacing:.06em;line-height:1.1;
+  text-shadow:0 2px 30px rgba(0,0,0,.7)}
+.ital{font-style:italic;font-size:clamp(19px,3.4vw,26px);line-height:1.5;color:var(--dim);
+  text-shadow:0 2px 22px rgba(0,0,0,.7)}
+.gap>*+*{margin-top:20px}
+.hair{width:84px;height:1px;background:var(--gold);opacity:.85;margin:0 auto}
+#hud{position:fixed;left:10px;top:10px;z-index:40;font:11px ui-monospace,monospace;color:#8a9;
+  background:rgba(0,0,0,.5);padding:4px 8px;pointer-events:none;display:none}
+body.debug #hud{display:block}
+
+/* ---------- the harbour (details after the film) ---------- */
+#harbour{position:relative;z-index:8;background:
+  linear-gradient(180deg,#04050d 0%,#131a30 34%,#3a2b3d 72%,#6E4A3E 100%)}
+#harbour section{padding:110px 0;text-align:center}
+.col{width:min(660px,90vw);margin:0 auto}
+.h-script{font-family:"Marcellus",serif;font-size:clamp(30px,5.4vw,44px);letter-spacing:.06em}
+.blocks>*+*{margin-top:52px}
+.stack>*+*{margin-top:18px}
+.cards{display:grid;grid-template-columns:1fr;gap:20px;text-align:left}
+@media(min-width:640px){.cards{grid-template-columns:1fr 1fr}}
+.card{border:1px solid rgba(242,235,221,.2);padding:26px 24px;background:rgba(4,5,13,.35)}
+.card h4{font-family:"Marcellus",serif;font-weight:400;font-size:22px;margin-bottom:10px}
+.card p{font-size:16px;color:var(--dim);line-height:1.55;white-space:pre-line}
+.qa{display:grid;grid-template-columns:1fr;gap:22px;text-align:left}
+@media(min-width:640px){.qa{grid-template-columns:1fr 1fr}}
+.qa dt{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.2em;font-size:12px;
+  color:var(--gold2);margin-bottom:6px}
+.qa dd{font-size:16px;color:var(--dim);font-style:italic}
+.count{display:flex;gap:26px;justify-content:center}
+.count b{display:block;font-family:"Marcellus",serif;font-weight:400;font-size:44px;color:var(--gold2);
+  font-variant-numeric:tabular-nums;line-height:1}
+.count span{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.24em;font-size:11px;color:var(--dim)}
+.btn{display:inline-block;padding:15px 40px;border:1px solid rgba(224,177,95,.65);color:var(--gold2);
+  font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.34em;font-size:14px;
+  text-decoration:none;pointer-events:auto}
+.btn:hover{background:var(--gold);color:#1A1204}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+footer{padding:80px 0;text-align:center}
+#harbour .dawn{color:#F7E9D4}
+
+/* ---------- editor (same contract as the other engines; ivory panel, Marcellus labels) ---------- */
+#editor{position:fixed;inset:0 0 0 auto;width:min(430px,100vw);z-index:60;background:#F7F2E7;
+  color:#26221A;overflow-y:auto;padding:26px 22px 90px;font-family:Georgia,serif;
+  box-shadow:-12px 0 40px rgba(0,0,0,.45)}
+#editor h2{font-family:"Marcellus",serif;font-size:20px;letter-spacing:.06em;margin-bottom:4px}
+#editor .hint{font-size:13px;color:#6E6353;margin-bottom:18px;font-style:italic}
+#editor label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.16em;
+  color:#8A7B60;margin:14px 0 4px;font-family:"Marcellus",serif}
+#editor input,#editor textarea{width:100%;border:1px solid #CFC2A8;
+  background:#FFFDF7;padding:9px 10px;font:inherit;font-size:14px;color:#26221A}
+#editor textarea{min-height:64px;resize:vertical}
+#editor .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#editor fieldset{border:1px solid #D8CDB4;padding:12px;margin-top:18px}
+#editor legend{font-family:"Marcellus",serif;font-size:12px;letter-spacing:.2em;
+  text-transform:uppercase;color:#8A7B60;padding:0 6px}
+#editor .dl{position:fixed;right:14px;bottom:14px;z-index:61;background:#04050d;color:#F2EBDD;
+  border:0;font-family:"Marcellus",serif;letter-spacing:.2em;text-transform:uppercase;
+  font-size:13px;padding:16px 26px;cursor:pointer}
+#editor .close{position:absolute;top:12px;right:14px;background:none;border:0;font-size:22px;
+  cursor:pointer;color:#8A7B60}
+body.editing{overflow:auto}
+body.editing #film,body.editing #track,body.editing #grade{display:none}
+body.editing .st{position:static;opacity:1;pointer-events:auto;padding:60px 8vw;transform:none!important;display:flex!important}
+body.editing .rv{opacity:1;transform:none}
+@media(min-width:900px){body.editing .st,body.editing #harbour{margin-right:430px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+</head>
+<body>
+<canvas id="film"></canvas>
+<div id="grade"></div>
+<div id="track"></div>
+<div id="hud">p — · frame —</div>
+
+<!-- ============ film stations (data-ch anchors each to its chapter's centre) ============ -->
+<section class="st" data-ch="blessing" data-w="0.10">
+  <div class="in gap">
+    <p class="lbl" data-bind="tagline">Together with their families</p>
+    <h1 class="names" data-bind="names">Elena &amp; Rohan</h1>
+    <div class="hair"></div>
+    <p class="lbl"><span data-bind="dateLine">14 February 2027</span> · <span data-bind="city">Udaipur</span></p>
+  </div>
+</section>
+<section class="st" data-ch="haldi" data-w="0.06">
+  <div class="in gap"><p class="ital" data-bind="stHaldi">Haldi · the golden morning</p></div>
+</section>
+<section class="st" data-ch="feast" data-w="0.06">
+  <div class="in gap"><p class="ital" data-bind="stFeast">Dinner under the lights</p></div>
+</section>
+<section class="st" data-ch="pheras" data-w="0.06">
+  <div class="in gap"><p class="ital" data-bind="stPheras">Seven vows around the fire</p></div>
+</section>
+<section class="st" data-ch="palace" data-w="0.06">
+  <div class="in gap"><p class="ital" data-bind="stPalace">The celebration begins</p></div>
+</section>
+<section class="st" data-ch="firstlight" data-w="0.07">
+  <div class="in gap"><p class="ital" data-bind="stFirstlight">And a new life begins — RSVP below</p></div>
+</section>
+
+<!-- ============ the harbour ============ -->
+<div id="harbour">
+  <section><div class="col blocks">
+    <div class="stack rv"><p class="lbl">The details</p><h2 class="h-script">Where &amp; when</h2><div class="hair"></div></div>
+    <div class="cards">
+      <div class="card rv" data-ev="3"><h4>Ceremony</h4><p></p></div>
+      <div class="card rv" data-ev="4"><h4>Reception</h4><p></p></div>
+    </div>
+    <div class="cards">
+      <div class="card rv" data-ev="0" data-ev-style="small"><h4>Mehendi</h4><p></p></div>
+      <div class="card rv" data-ev="1" data-ev-style="small"><h4>Haldi</h4><p></p></div>
+      <div class="card rv" data-ev="2" data-ev-style="small"><h4>Sangeet</h4><p></p></div>
+      <div class="card rv"><h4>Getting there</h4><p data-bind="travel"></p></div>
+    </div>
+  </div></section>
+
+  <section><div class="col blocks">
+    <div class="stack rv"><p class="lbl">Stay</p><h2 class="h-script">Where to stay</h2><div class="hair"></div></div>
+    <div class="cards">
+      <div class="card rv" data-hotel="0"><h4></h4><p></p></div>
+      <div class="card rv" data-hotel="1"><h4></h4><p></p></div>
+    </div>
+    <p class="ital rv" data-bind="hotelNote"></p>
+    <div class="stack rv"><p class="lbl">What to wear</p><p class="ital" data-bind="wear"></p></div>
+    <dl class="qa" id="qa-list"></dl>
+  </div></section>
+
+  <section><div class="col stack">
+    <p class="lbl dawn rv">Kindly reply by <span data-bind="rsvpBy">20 December 2026</span></p>
+    <div class="count rv">
+      <div><b id="cd-d">—</b><span>days</span></div>
+      <div><b id="cd-h">—</b><span>hours</span></div>
+      <div><b id="cd-m">—</b><span>min</span></div>
+    </div>
+    <p class="rv"><a class="btn" href="#">RSVP</a></p>
+    <p class="ital rv" style="color:#D9BFA8">or write to <span data-bind="email"></span></p>
+  </div></section>
+  <footer><div class="col">
+    <p class="h-script dawn" data-bind="names">Elena &amp; Rohan</p>
+  </div></footer>
+</div>
+
+<script type="module">
+/* ============ SCRUB-FILM ENGINE — the full 13-chapter site ============
+   Pre-rendered frames drawn to canvas; scroll IS the timeline.
+   All motion is a pure function of p. Chapters whose frames are not on
+   disk yet are probed at boot (f_001.webp) and skipped from the timeline;
+   when the frames land the same page picks them up with no code change. */
+
+const Q = new URLSearchParams(location.search);
+const EDITING = Q.has("edit") || location.hash === "#edit";
+
+/* ---------- the couple's content (the #cfg block above) ---------- */
+const $ = s => document.querySelector(s);
+const cfg = JSON.parse(document.getElementById("cfg").textContent);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pick = (o, path) => path.split(".").reduce((a,k) => a?.[isNaN(k) ? k : +k], o);
+function render(){
+  document.title = cfg.names + " — A River of Light";
+  document.querySelectorAll("[data-bind]").forEach(el => { el.textContent = pick(cfg, el.dataset.bind) ?? ""; });
+  document.querySelectorAll("[data-ev]").forEach(el => {
+    const e = (cfg.events||[])[+el.dataset.ev]; if (!e) return;
+    if (el.dataset.evStyle === "small"){
+      el.querySelector("h4").textContent = e.label + " · " + e.date;
+      el.querySelector("p").textContent = e.time + " — " + e.venue;
+    } else {
+      el.querySelector("h4").textContent = e.label;
+      el.querySelector("p").textContent = e.time + " · " + e.date + "\n" + e.venue;
+    }
+  });
+  document.querySelectorAll("[data-hotel]").forEach(el => {
+    const h = (cfg.hotels||[])[+el.dataset.hotel]; if (!h) return;
+    el.querySelector("h4").textContent = h.name;
+    el.querySelector("p").textContent = h.lines + (h.phone ? "\n" + h.phone : "");
+  });
+  $("#qa-list").innerHTML = (cfg.faqs||[]).map(f =>
+    `<div class="rv"><dt>${esc(f.q)}</dt><dd>${esc(f.a)}</dd></div>`).join("");
+  document.querySelectorAll("a.btn").forEach(a => a.href = cfg.rsvpUrl || "#");
+}
+render();
+
+/* ---------- chapters: the full story arc, present or not ----------
+   present starts null; a boot probe of f_001.webp settles it. */
+const CHAPTERS = [
+  { name: "mist",       count: 120 },   // prologue
+  { name: "blessing",   count: 91 },
+  { name: "mehendi",    count: 91 },
+  { name: "haldi",      count: 91 },
+  { name: "sangeet",    count: 91 },
+  { name: "feast",      count: 91 },
+  { name: "baraat",     count: 91 },
+  { name: "river",      count: 120 },  // the lantern journey to the venue
+  { name: "gate",       count: 91 },
+  { name: "pheras",     count: 120 },
+  { name: "jaimala",    count: 91 },
+  { name: "palace",     count: 91 },
+  { name: "fireworks",  count: 91 },
+  { name: "vidaai",     count: 91 },
+  { name: "firstlight", count: 91 },
+];
+for (const ch of CHAPTERS){
+  ch.base = "frames/" + ch.name + "/f_"; ch.pad = 3; ch.ext = ".webp";
+  ch.present = false; ch.from = 0; ch.to = 0; ch.load = 0; // 0 idle · 1 loading · 2 loaded
+}
+const FILM_END = 0.95;          // last frame holds 0.95 → 1.0
+const XFADE = 0.06;             // crossfade span, as a fraction of the smaller adjacent chapter
+
+const cv = document.getElementById("film"), ctx = cv.getContext("2d");
+function fit(){ cv.width = innerWidth * Math.min(2, devicePixelRatio);
+  cv.height = innerHeight * Math.min(2, devicePixelRatio); }
+addEventListener("resize", () => { fit(); draw(); }); fit();
+
+/* ---------- frame store: decode once, keep bitmaps ---------- */
+const frames = new Map();
+let loaded = 0;
+function frameUrl(ch, i){ return ch.base + String(i + 1).padStart(ch.pad, "0") + ch.ext; }
+async function loadChapter(ch){
+  if (!ch.present || ch.load) return;
+  ch.load = 1;
+  const jobs = [];
+  for (let i = 0; i < ch.count; i++){
+    jobs.push(fetch(frameUrl(ch, i))
+      .then(r => { if (!r.ok) throw 0; return r.blob(); })
+      .then(b => createImageBitmap(b))
+      .then(bm => { frames.set(frameUrl(ch, i), bm); loaded++; })
+      .catch(() => {}));
+    if (jobs.length % 8 === 0){ await Promise.race(jobs.slice(-8)); }
+  }
+  await Promise.all(jobs);
+  ch.load = 2;
+  draw(); // the frame under the needle may have just arrived
+}
+
+/* ---------- timeline: present chapters share 0 → FILM_END by frame count ---------- */
+let PRESENT = [];
+function buildTimeline(){
+  PRESENT = CHAPTERS.filter(ch => ch.present);
+  const total = PRESENT.reduce((a, ch) => a + ch.count, 0) || 1;
+  let cursor = 0;
+  for (const ch of PRESENT){
+    ch.from = cursor;
+    cursor += (ch.count / total) * FILM_END;
+    ch.to = cursor;
+  }
+  placeStationCentres();
+}
+function placeStationCentres(){
+  for (const st of stations){
+    const ch = CHAPTERS.find(c => c.name === st.dataset.ch);
+    if (ch && ch.present){
+      st.dataset.c = ((ch.from + ch.to) / 2).toFixed(4);
+      st.style.display = "";
+    } else {
+      st.style.display = "none"; // chapter missing → its station sits out too
+    }
+  }
+}
+
+/* ---------- lazy loading: 2 present-chapter lookahead from the needle ---------- */
+function ensureAhead(){
+  const i = PRESENT.findIndex(ch => p < ch.to);
+  const at = i === -1 ? PRESENT.length - 1 : i;
+  for (let k = at; k < Math.min(PRESENT.length, at + 3); k++) loadChapter(PRESENT[k]);
+}
+
+/* ---------- draw: base chapter + 6% crossfade at boundaries, cover-fit ---------- */
+let p = 0;
+function frameAt(ch, t){
+  t = Math.min(1, Math.max(0, t));
+  const idx = Math.min(ch.count - 1, Math.round(t * (ch.count - 1)));
+  return frames.get(frameUrl(ch, idx)) || null;
+}
+function chapterT(ch){ return (Math.min(p, FILM_END) - ch.from) / (ch.to - ch.from); }
+function coverDraw(bm, alpha){
+  const cw = cv.width, chh = cv.height;
+  const s = Math.max(cw / bm.width, chh / bm.height);
+  const w = bm.width * s, h = bm.height * s;
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(bm, (cw - w) / 2, (chh - h) / 2, w, h);
+  ctx.globalAlpha = 1;
+}
+function draw(){
+  if (!PRESENT.length) return;
+  let i = PRESENT.findIndex(ch => p < ch.to);
+  if (i === -1) i = PRESENT.length - 1;
+
+  /* boundary blend window centred on the join between i-1/i and i/i+1 */
+  let base = PRESENT[i], over = null, alpha = 0;
+  const win = j => XFADE * Math.min(PRESENT[j].to - PRESENT[j].from, PRESENT[j+1].to - PRESENT[j+1].from);
+  if (i + 1 < PRESENT.length){
+    const w = win(i), b = base.to;
+    if (p > b - w / 2){ over = PRESENT[i + 1]; alpha = (p - (b - w / 2)) / w; }
+  }
+  if (!over && i > 0){
+    const w = win(i - 1), b = PRESENT[i - 1].to;
+    if (p < b + w / 2){ base = PRESENT[i - 1]; over = PRESENT[i]; alpha = (p - (b - w / 2)) / w; }
+  }
+  alpha = Math.min(1, Math.max(0, alpha));
+
+  const bmA = frameAt(base, chapterT(base));
+  if (bmA) coverDraw(bmA, 1);
+  if (over && alpha > 0){
+    const bmB = frameAt(over, chapterT(over));
+    if (bmB) coverDraw(bmB, alpha);
+  }
+  hud.textContent = `p ${p.toFixed(3)} · ${base.name}${over ? " ⇢ " + over.name : ""} · loaded ${loaded}`;
+}
+
+/* ---------- stations (fade in/out at chapter centres) ---------- */
+const stations = [...document.querySelectorAll(".st")];
+function placeStations(){
+  for (const st of stations){
+    if (st.style.display === "none" || !st.dataset.c) continue;
+    const c = +st.dataset.c, w = +st.dataset.w;
+    let v = Math.max(0, 1 - Math.abs(p - c) / (w / 2));
+    v = v * v * (3 - 2 * v);
+    st.style.opacity = v;
+    st.style.pointerEvents = v > 0.5 ? "auto" : "none";
+    st.style.transform = `translateY(${(p - c) * -140}px)`;
+  }
+}
+
+/* ---------- scroll plumbing ---------- */
+const hud = document.getElementById("hud");
+if (Q.has("debug")) document.body.classList.add("debug");
+if (!EDITING){
+  const lenis = new Lenis({ lerp: 0.09 });
+  window.__lenis = lenis;
+  lenis.on("scroll", ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.create({ trigger: "#track", start: "top top", end: "bottom bottom",
+    scrub: true, onUpdate: self => { p = self.progress; ensureAhead(); draw(); placeStations(); } });
+}
+
+/* ---------- deterministic QA hook, same contract as the other engines ---------- */
+window.__setP = v => {
+  p = Math.min(1, Math.max(0, v));
+  if (PRESENT.length) ensureAhead();
+  draw(); placeStations();
+  return p;
+};
+
+/* ---------- boot: probe every chapter's first frame, then the film begins ---------- */
+async function boot(){
+  await Promise.all(CHAPTERS.map(ch =>
+    fetch(frameUrl(ch, 0), { method: "HEAD" })
+      .then(r => { ch.present = r.ok; })
+      .catch(() => { ch.present = false; })));
+  buildTimeline();
+  if (EDITING) return;
+  if (PRESENT.length){
+    await loadChapter(PRESENT[0]);   // only the opening chapter blocks first paint
+    ensureAhead();                    // the rest stream in behind the needle
+  }
+  draw(); placeStations();
+  if (Q.get("p")) setTimeout(() => window.__setP(parseFloat(Q.get("p"))), 400);
+}
+boot();
+
+/* ---------- countdown + reveals ---------- */
+let cdTimer;
+function countdown(){
+  clearInterval(cdTimer);
+  const t = new Date(cfg.iso).getTime();
+  const tick = () => {
+    const d = Math.max(0, t - Date.now());
+    const set = (id,v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set("cd-d", Math.floor(d/864e5));
+    set("cd-h", String(Math.floor(d/36e5)%24).padStart(2,"0"));
+    set("cd-m", String(Math.floor(d/6e4)%60).padStart(2,"0"));
+  };
+  tick(); cdTimer = setInterval(tick, 30000);
+}
+countdown();
+{
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add("in");
+  }), {threshold: 0.15});
+  document.querySelectorAll(".rv").forEach((el, i) => {
+    el.style.transitionDelay = (i%4)*90 + "ms"; io.observe(el);
+  });
+}
+
+/* ---------- editor (same contract as the other engines) ---------- */
+if (EDITING) buildEditor();
+function buildEditor(){
+  document.body.classList.add("editing");
+  const ed = document.createElement("div"); ed.id = "editor";
+  const F = (label, val, key, kind) => `
+    <label>${label}</label>
+    ${kind === "area"
+      ? `<textarea data-k="${key}">${esc(val)}</textarea>`
+      : `<input type="${kind||"text"}" data-k="${key}" value="${esc(val)}">`}`;
+  ed.innerHTML = `
+    <button class="close" title="Close">&times;</button>
+    <h2>Make it yours</h2>
+    <p class="hint">The page behind this panel shows every text of the film at once while you
+      edit, then the harbour below it. Press Download for your own copy of the river.</p>
+    ${F("Couple", cfg.names, "names")}
+    ${F("Intro line", cfg.tagline, "tagline")}
+    <div class="row">${F("Date shown", cfg.dateLine, "dateLine")}${F("City", cfg.city, "city")}</div>
+    ${F("Wedding date & time (for the countdown)", cfg.iso.slice(0,16), "iso", "datetime-local")}
+    <fieldset><legend>Lines along the river</legend>
+      ${F("Haldi", cfg.stHaldi, "stHaldi")}
+      ${F("The feast", cfg.stFeast, "stFeast")}
+      ${F("Pheras", cfg.stPheras, "stPheras")}
+      ${F("The palace", cfg.stPalace, "stPalace")}
+      ${F("First light", cfg.stFirstlight, "stFirstlight")}
+    </fieldset>
+    <fieldset><legend>Events</legend>
+      ${cfg.events.map((e,i) => `
+        <div class="row">${F("Event "+(i+1), e.label, "events."+i+".label")}${F("Date", e.date, "events."+i+".date")}</div>
+        <div class="row">${F("Time", e.time, "events."+i+".time")}${F("Venue", e.venue, "events."+i+".venue")}</div>`)
+        .join('<hr style="border:0;border-top:1px dashed #D8CDB4;margin:12px 0">')}
+    </fieldset>
+    <fieldset><legend>Stay</legend>
+      ${cfg.hotels.map((h,i) => `
+        ${F("Hotel "+(i+1), h.name, "hotels."+i+".name")}
+        ${F("Lines", h.lines, "hotels."+i+".lines", "area")}
+        ${F("Phone", h.phone, "hotels."+i+".phone")}`).join("")}
+      ${F("Transport note", cfg.hotelNote, "hotelNote", "area")}
+      ${F("Getting there", cfg.travel, "travel", "area")}
+      ${F("What to wear", cfg.wear, "wear", "area")}
+    </fieldset>
+    <fieldset><legend>Good to know</legend>
+      ${cfg.faqs.map((f,i) => `<div class="row">${F("Q", f.q, "faqs."+i+".q")}${F("A", f.a, "faqs."+i+".a")}</div>`).join("")}
+    </fieldset>
+    <fieldset><legend>RSVP</legend>
+      ${F("RSVP form link (Google Form works well)", cfg.rsvpUrl, "rsvpUrl")}
+      <div class="row">${F("Reply by", cfg.rsvpBy, "rsvpBy")}${F("Email", cfg.email, "email")}</div>
+    </fieldset>
+    <button class="dl">Download my invitation</button>`;
+  document.body.appendChild(ed);
+  ed.addEventListener("input", e => {
+    const k = e.target.dataset.k; if (!k) return;
+    const path = k.split(".");
+    let o = cfg;
+    while (path.length > 1){ o = o[isNaN(path[0]) ? path[0] : +path[0]]; path.shift(); }
+    o[isNaN(path[0]) ? path[0] : +path[0]] = e.target.value;
+    render(); countdown();
+  });
+  ed.querySelector(".close").addEventListener("click", () => {
+    ed.remove(); document.body.classList.remove("editing");
+  });
+  ed.querySelector(".dl").addEventListener("click", bake);
+}
+function bake(){
+  document.getElementById("cfg").textContent = "\n" + JSON.stringify(cfg, null, 1) + "\n";
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelector("#editor")?.remove();
+  clone.querySelector("body").className = "";
+  clone.querySelector("#track").style.display = "";
+  clone.querySelector("#film").style.display = "";
+  clone.querySelectorAll(".st").forEach(st => { st.style.cssText = ""; });
+  clone.querySelectorAll(".rv").forEach(el => {
+    el.classList.remove("in"); el.style.transitionDelay = "";
+  });
+  const blob = new Blob(["<!doctype html>\n" + clone.outerHTML], {type:"text/html"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = (cfg.names.replace(/[^a-z0-9]+/gi,"-").toLowerCase() || "wedding") + "-river-of-light.html";
+  a.click();
+}
+</script>
+</body>
+</html>
