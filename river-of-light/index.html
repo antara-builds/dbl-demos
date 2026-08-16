@@ -140,29 +140,47 @@ body.editing .rv{opacity:1;transform:none}
 <div id="track"></div>
 <div id="hud">p — · frame —</div>
 
-<!-- ============ film stations (data-ch anchors each to its chapter's centre) ============ -->
-<section class="st" data-ch="blessing" data-w="0.10">
+<!-- ============ film stations (data-ch anchors each to its chapter's centre) ============
+     Hemant 2026-08-16: stations must CARRY THE INVITATION during the scroll — every event
+     chapter shows its label, date, time and venue from #cfg, not just a poetic line. -->
+<section class="st" id="hero" data-ch="mist" data-w="0.16">
   <div class="in gap">
     <p class="lbl" data-bind="tagline">Together with their families</p>
     <h1 class="names" data-bind="names">Elena &amp; Rohan</h1>
     <div class="hair"></div>
     <p class="lbl"><span data-bind="dateLine">14 February 2027</span> · <span data-bind="city">Udaipur</span></p>
+    <p class="ital" id="scroll-cue">scroll — the film is the invitation</p>
   </div>
 </section>
-<section class="st" data-ch="haldi" data-w="0.06">
-  <div class="in gap"><p class="ital" data-bind="stHaldi">Haldi · the golden morning</p></div>
+<section class="st" data-ch="blessing" data-w="0.08">
+  <div class="in gap"><p class="ital">It begins, as everything does, with a blessing</p></div>
 </section>
-<section class="st" data-ch="feast" data-w="0.06">
-  <div class="in gap"><p class="ital" data-bind="stFeast">Dinner under the lights</p></div>
+<section class="st st-ev" data-ch="mehendi" data-w="0.08" data-ev-style="small" data-ev="0">
+  <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
+</section>
+<section class="st st-ev" data-ch="haldi" data-w="0.08" data-ev-style="small" data-ev="1">
+  <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
+</section>
+<section class="st st-ev" data-ch="sangeet" data-w="0.08" data-ev-style="small" data-ev="2">
+  <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
+</section>
+<section class="st st-ev" data-ch="baraat" data-w="0.08" data-ev-style="small" data-ev="3">
+  <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
+</section>
+<section class="st" data-ch="jaimala" data-w="0.06">
+  <div class="in gap"><p class="ital">The jaimala, at the gates</p></div>
 </section>
 <section class="st" data-ch="pheras" data-w="0.06">
   <div class="in gap"><p class="ital" data-bind="stPheras">Seven vows around the fire</p></div>
 </section>
-<section class="st" data-ch="palace" data-w="0.06">
-  <div class="in gap"><p class="ital" data-bind="stPalace">The celebration begins</p></div>
+<section class="st st-ev" data-ch="feast" data-w="0.08" data-ev-style="small" data-ev="4">
+  <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
 </section>
 <section class="st" data-ch="firstlight" data-w="0.07">
-  <div class="in gap"><p class="ital" data-bind="stFirstlight">And a new life begins — RSVP below</p></div>
+  <div class="in gap">
+    <p class="ital" data-bind="stFirstlight">And a new life begins — RSVP below</p>
+    <p class="lbl">please reply by <span data-bind="rsvpBy">20 December 2026</span></p>
+  </div>
 </section>
 
 <!-- ============ the harbour ============ -->
@@ -249,18 +267,20 @@ render();
 /* ---------- chapters: the full story arc, present or not ----------
    present starts null; a boot probe of f_001.webp settles it. */
 const CHAPTERS = [
+  /* Hemant 2026-08-16: real rasm order — jaimala happens at arrival, BEFORE the pheras;
+     dinner is served after the ceremony; the palace reveal belongs to the baraat's arrival. */
   { name: "mist",       count: 120 },   // prologue
   { name: "blessing",   count: 91 },
   { name: "mehendi",    count: 91 },
   { name: "haldi",      count: 91 },
   { name: "sangeet",    count: 91 },
-  { name: "feast",      count: 91 },
-  { name: "baraat",     count: 91 },
   { name: "river",      count: 120 },  // the lantern journey to the venue
+  { name: "baraat",     count: 91 },
   { name: "gate",       count: 91 },
-  { name: "pheras",     count: 120 },
-  { name: "jaimala",    count: 91 },
   { name: "palace",     count: 91 },
+  { name: "jaimala",    count: 91 },
+  { name: "pheras",     count: 120 },
+  { name: "feast",      count: 91 },
   { name: "fireworks",  count: 91 },
   { name: "vidaai",     count: 91 },
   { name: "firstlight", count: 91 },
@@ -379,7 +399,9 @@ function placeStations(){
   for (const st of stations){
     if (st.style.display === "none" || !st.dataset.c) continue;
     const c = +st.dataset.c, w = +st.dataset.w;
-    let v = Math.max(0, 1 - Math.abs(p - c) / (w / 2));
+    /* the hero owns the top of the page: fully visible from p=0, fades on scroll-away */
+    const d = st.id === "hero" ? Math.max(0, p - c) : Math.abs(p - c);
+    let v = Math.max(0, 1 - d / (w / 2));
     v = v * v * (3 - 2 * v);
     st.style.opacity = v;
     st.style.pointerEvents = v > 0.5 ? "auto" : "none";
@@ -416,8 +438,13 @@ async function boot(){
       .catch(() => { ch.present = false; })));
   buildTimeline();
   if (EDITING) return;
+  placeStations();                    // hero text is on screen before a single frame arrives
   if (PRESENT.length){
-    await loadChapter(PRESENT[0]);   // only the opening chapter blocks first paint
+    const first = PRESENT[0];
+    /* paint the very first frame the moment it decodes — no blank opening screen */
+    fetch(frameUrl(first, 0)).then(r => r.blob()).then(b => createImageBitmap(b))
+      .then(bm => { frames.set(frameUrl(first, 0), bm); draw(); }).catch(() => {});
+    await loadChapter(first);         // only the opening chapter blocks full playback
     ensureAhead();                    // the rest stream in behind the needle
   }
   draw(); placeStations();
