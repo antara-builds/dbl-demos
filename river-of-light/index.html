@@ -53,7 +53,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--ink:#04050d;--ivory:#F2EBDD;--dim:#B9B2A2;--gold:#C98A2B;--gold2:#E0B15F}
 body{background:var(--ink);color:var(--ivory);font-family:"EB Garamond",Georgia,serif;overflow-x:hidden}
-#track{height:1400vh}
+#track{height:3400vh} /* ~2 viewports of scroll per shot — the film breathes at real scroll speed */
 #film{position:fixed;inset:0;z-index:1;width:100%;height:100%;object-fit:cover}
 #grade{position:fixed;inset:0;z-index:2;pointer-events:none;
   background:radial-gradient(75% 60% at 50% 45%, transparent 50%, rgba(2,3,8,.55) 120%)}
@@ -387,12 +387,15 @@ function buildTimeline(){
                   w: (a.card != null ? CARD_GAP : DIP_GAP) * FILM_END });
   }
   const gapTotal = GAPS.reduce((s, g) => s + g.w, 0);
-  const total = PRESENT.reduce((a, ch) => a + ch.count, 0) || 1;
+  /* ceremonial beats hold longer under the scroll (weight multiplies a chapter's span) */
+  const W = { pheras: 1.6, jaimala: 1.5, blessing: 1.2, firstlight: 1.3 };
+  const wt = ch => ch.count * (W[ch.name] || 1);
+  const total = PRESENT.reduce((a, ch) => a + wt(ch), 0) || 1;
   const span = FILM_END - gapTotal;
   let cursor = 0;
   PRESENT.forEach((ch, i) => {
     ch.from = cursor;
-    cursor += (ch.count / total) * span;
+    cursor += (wt(ch) / total) * span;
     ch.to = cursor;
     const g = GAPS.find(g => g.after === i);
     if (g){ g.from = cursor; cursor += g.w; g.to = cursor; }
@@ -422,6 +425,18 @@ function ensureAhead(){
   const i = PRESENT.findIndex(ch => p < ch.to);
   const at = i === -1 ? PRESENT.length - 1 : i;
   for (let k = at; k < Math.min(PRESENT.length, at + 3); k++) loadChapter(PRESENT[k]);
+}
+/* the whole film streams in behind the first paint — a fast scroller must never
+   outrun the loader into black. Nearest-to-the-needle chapters load first. */
+let streaming = false;
+async function streamAll(){
+  if (streaming) return; streaming = true;
+  while (PRESENT.some(ch => ch.load !== 2)){
+    const next = PRESENT.filter(ch => !ch.load)
+      .sort((a, b) => Math.abs((a.from + a.to) / 2 - p) - Math.abs((b.from + b.to) / 2 - p))[0];
+    if (!next){ await new Promise(r => setTimeout(r, 250)); continue; }
+    await loadChapter(next);
+  }
 }
 
 /* ---------- draw: base chapter + 6% crossfade at boundaries, cover-fit ---------- */
@@ -539,6 +554,9 @@ function placeStations(){
       continue;
     }
     if (!st.dataset.c) continue;
+    /* a caption never speaks over a black screen: its chapter must be drawable first */
+    const own = CHAPTERS.find(x => x.name === st.dataset.ch);
+    if (own && own.load !== 2 && st.id !== "hero"){ st.style.opacity = 0; st.__v = null; continue; }
     const c = +st.dataset.c, w = +st.dataset.w;
     /* the hero owns the top of the page: fully visible from p=0, fades on scroll-away */
     const d = st.id === "hero" ? Math.max(0, p - c) : Math.abs(p - c);
@@ -598,7 +616,7 @@ async function boot(){
     fetch(frameUrl(first, 0)).then(r => r.blob()).then(b => createImageBitmap(b))
       .then(bm => { frames.set(frameUrl(first, 0), bm); draw(); }).catch(() => {});
     await loadChapter(first);         // only the opening chapter blocks full playback
-    ensureAhead();                    // the rest stream in behind the needle
+    streamAll();                      // then the ENTIRE film streams in, nearest-first
   }
   draw(); placeStations();
   if (Q.get("p")) setTimeout(() => window.__setP(parseFloat(Q.get("p"))), 400);
