@@ -312,19 +312,26 @@ const CHAPTERS = [
      dinner is served after the ceremony; the palace reveal belongs to the baraat's arrival.
      W60 direction pass: act = which of the four acts owns the chapter, frame = how it sits
      on canvas (full / letterbox / open = bars animate 13vh→0 across the chapter),
-     tx = the transition at this chapter's OUTGOING boundary (dissolve / dipblack / push / open),
-     card = title-card index shown inside a dipblack's reserved black span. */
+     tx = the transition at this chapter's OUTGOING boundary
+          (dissolve / dipblack / push / open / matchcut / speedramp — DIRECTION.md §2),
+     card = title-card index shown inside a dipblack's reserved black span,
+     beat = "<parent>": a sub-chapter (DIRECTION.md §1). It inherits the parent's act framing,
+          has no station of its own (the parent's caption covers the sequence), and joins its
+          parent with a dissolve unless the parent's tx says otherwise. While a beat's frames
+          are not on disk, the beat sits out and its OUTGOING tx governs the parent's boundary,
+          so the authored grammar holds either way. */
   { name: "mist",       count: 120, act: 0, frame: "full",      tx: "dissolve" },  // prologue
-  { name: "blessing",   count: 91,  act: 1, frame: "letterbox", tx: "dissolve" },
+  { name: "blessing",   count: 91,  act: 1, frame: "letterbox", tx: "matchcut" },  // flame → henna spiral
   { name: "mehendi",    count: 91,  act: 1, frame: "letterbox", tx: "dissolve" },
   { name: "haldi",      count: 91,  act: 1, frame: "letterbox", tx: "dipblack", card: 0 },
-  { name: "sangeet",    count: 91,  act: 2, frame: "full",      tx: "push" },
+  { name: "sangeet",    count: 91,  act: 2, frame: "full",      tx: "speedramp" }, // whip into the river
   { name: "river",      count: 120, act: 2, frame: "full",      tx: "push" },      // lantern journey
   { name: "baraat",     count: 91,  act: 2, frame: "full",      tx: "dipblack", card: 1 },
-  { name: "gate",       count: 91,  act: 3, frame: "full",      tx: "dissolve" },
+  { name: "gate",       count: 91,  act: 3, frame: "full",      tx: "push" },
   { name: "palace",     count: 91,  act: 3, frame: "full",      tx: "dissolve" },
-  { name: "jaimala",    count: 91,  act: 3, frame: "full",      tx: "dissolve" },
-  { name: "pheras",     count: 120, act: 3, frame: "full",      tx: "dipblack", card: 2 },
+  { name: "jaimala",    count: 91,  act: 3, frame: "full",      tx: "matchcut" },  // garland → fire circle
+  { name: "pheras",     count: 120, act: 3, frame: "full",      tx: "dissolve" },  // joins its beat
+  { name: "pherasfire", count: 91,  beat: "pheras",             tx: "dipblack", card: 2 }, // fire closeup — frames land later
   { name: "feast",      count: 91,  act: 4, frame: "full",      tx: "dissolve" },
   { name: "fireworks",  count: 91,  act: 4, frame: "full",      tx: "dipblack" },  // dip, no card
   { name: "vidaai",     count: 91,  act: 4, frame: "letterbox", tx: "open" },
@@ -333,12 +340,17 @@ const CHAPTERS = [
 for (const ch of CHAPTERS){
   ch.base = "frames/" + ch.name + "/f_"; ch.pad = 3; ch.ext = ".webp";
   ch.present = false; ch.from = 0; ch.to = 0; ch.load = 0; // 0 idle · 1 loading · 2 loaded
+  if (ch.beat){
+    const par = CHAPTERS.find(c => c.name === ch.beat);
+    if (par){ ch.act = ch.act ?? par.act; ch.frame = ch.frame ?? par.frame; }
+  }
 }
 const FILM_END = 0.95;          // last frame holds 0.95 → 1.0
 const XFADE = 0.06;             // crossfade span, as a fraction of the smaller adjacent chapter
 const BAR = 0.13;               // letterbox bar height, fraction of viewport height (≈13vh)
 const CARD_GAP = 0.025;         // timeline reserved for a dip-to-black WITH a title card
 const DIP_GAP = 0.012;          // dip-to-black without a card (fireworks → vidaai)
+const MATCH = 0.015;            // matchcut flash-dissolve span, fraction of the smaller neighbour
 
 const cv = document.getElementById("film"), ctx = cv.getContext("2d");
 function fit(){ cv.width = innerWidth * Math.min(2, devicePixelRatio);
@@ -371,20 +383,29 @@ async function loadChapter(ch){
    A dip span is only reserved when its two named neighbours are BOTH present and
    adjacent in the timeline; otherwise that boundary falls back to a dissolve. ---------- */
 let PRESENT = [], GAPS = [];
+function authoredRow(a, b){
+  /* the CHAPTERS row whose tx/card govern the boundary between timeline-adjacent a and b.
+     Adjacent rows: a itself. If every skipped row between them is a dormant BEAT, the last
+     skipped row's outgoing tx carries the boundary (so pheras→feast stays a dipblack+card
+     while pherasfire's frames are not on disk). Any other jump is an unauthored seam. */
+  const ia = CHAPTERS.indexOf(a), ib = CHAPTERS.indexOf(b);
+  if (ib === ia + 1) return a;
+  const between = CHAPTERS.slice(ia + 1, ib);
+  if (between.length && between.every(c => c.beat && !c.present)) return CHAPTERS[ib - 1];
+  return null;
+}
 function txBetween(a, b){
-  /* the authored transition applies only between the chapters it was written for */
-  if (CHAPTERS.indexOf(b) !== CHAPTERS.indexOf(a) + 1) return "dissolve";
-  return a.tx === "dipblack" ? "dissolve" /* dips are gap segments, not blend windows */
-       : (a.tx || "dissolve");
+  const row = authoredRow(a, b);
+  return row ? (row.tx || "dissolve") : "dissolve"; /* unauthored seams fall back to a dissolve */
 }
 function buildTimeline(){
   PRESENT = CHAPTERS.filter(ch => ch.present);
   GAPS = [];
   for (let i = 0; i < PRESENT.length - 1; i++){
-    const a = PRESENT[i], b = PRESENT[i + 1];
-    if (a.tx === "dipblack" && CHAPTERS.indexOf(b) === CHAPTERS.indexOf(a) + 1)
-      GAPS.push({ after: i, card: a.card ?? null,
-                  w: (a.card != null ? CARD_GAP : DIP_GAP) * FILM_END });
+    const row = authoredRow(PRESENT[i], PRESENT[i + 1]);
+    if (row && row.tx === "dipblack")
+      GAPS.push({ after: i, card: row.card ?? null,
+                  w: (row.card != null ? CARD_GAP : DIP_GAP) * FILM_END });
   }
   const gapTotal = GAPS.reduce((s, g) => s + g.w, 0);
   /* ceremonial beats hold longer under the scroll (weight multiplies a chapter's span) */
@@ -411,11 +432,17 @@ function placeStationCentres(){
       continue;
     }
     const ch = CHAPTERS.find(c => c.name === st.dataset.ch);
-    if (ch && ch.present){
-      st.dataset.c = ((ch.from + ch.to) / 2).toFixed(4);
+    if (ch && ch.present && !ch.beat){
+      /* a beat suppresses its own station; the parent's caption covers the whole
+         sequence, so the centre extends across any present beats that follow */
+      let to = ch.to;
+      for (let j = CHAPTERS.indexOf(ch) + 1;
+           j < CHAPTERS.length && CHAPTERS[j].beat === ch.name; j++)
+        if (CHAPTERS[j].present) to = CHAPTERS[j].to;
+      st.dataset.c = ((ch.from + to) / 2).toFixed(4);
       st.style.display = "";
     } else {
-      st.style.display = "none"; // chapter missing → its station sits out too
+      st.style.display = "none"; // chapter missing (or a beat) → its station sits out
     }
   }
 }
@@ -441,8 +468,15 @@ async function streamAll(){
 
 /* ---------- draw: base chapter + 6% crossfade at boundaries, cover-fit ---------- */
 let p = 0;
+function rampT(ch, t){
+  /* speedramp (DIRECTION.md §2): the outgoing chapter's last 20% of scroll span covers
+     45% of its frames, ease-in cubic — frames whip as the boundary approaches */
+  if (ch.tx !== "speedramp") return t;
+  return t < 0.8 ? t * (0.55 / 0.8)
+                 : 0.55 + 0.45 * Math.pow((t - 0.8) / 0.2, 3);
+}
 function frameAt(ch, t){
-  t = Math.min(1, Math.max(0, t));
+  t = rampT(ch, Math.min(1, Math.max(0, t)));
   const idx = Math.min(ch.count - 1, Math.round(t * (ch.count - 1)));
   return frames.get(frameUrl(ch, idx)) || null;
 }
@@ -484,23 +518,42 @@ function draw(){
     }
     label = "dip to black" + (gap.card != null ? " · card " + gap.card : "");
   } else {
-    /* boundary blend window centred on the join between i-1/i and i/i+1;
-       dipblack boundaries are gap segments above, so no blend window there */
+    /* boundary windows on the joins between i-1/i and i/i+1. Dipblack boundaries are
+       gap segments above. Symmetric crossfades (dissolve/push/open) open half a window
+       either side of the join; matchcut and speedramp are ASYMMETRIC — the outgoing
+       chapter holds (or ramps) clean up to the boundary, the effect lives entirely on
+       the incoming side, so only the behind-boundary branch knows about them. */
     let i = PRESENT.findIndex(ch => p < ch.to);
     if (i === -1) i = PRESENT.length - 1;
-    let base = PRESENT[i], over = null, alpha = 0;
-    const win = j => XFADE * Math.min(PRESENT[j].to - PRESENT[j].from, PRESENT[j+1].to - PRESENT[j+1].from);
-    if (i + 1 < PRESENT.length && base.tx !== "dipblack"){
-      const w = win(i), b = base.to;
-      if (p > b - w / 2){ over = PRESENT[i + 1]; alpha = (p - (b - w / 2)) / w; }
+    let base = PRESENT[i], over = null, alpha = 0, tx = "dissolve", flash = 0, ghost = 0;
+    const span = j => PRESENT[j].to - PRESENT[j].from;
+    const win = j => XFADE * Math.min(span(j), span(j + 1));
+    const XF = t => t === "dissolve" || t === "push" || t === "open";
+    if (i + 1 < PRESENT.length){
+      const t = txBetween(PRESENT[i], PRESENT[i + 1]);
+      if (XF(t)){
+        const w = win(i), b = base.to;
+        if (p > b - w / 2){ over = PRESENT[i + 1]; alpha = (p - (b - w / 2)) / w; tx = t; }
+      }
     }
-    if (!over && i > 0 && PRESENT[i - 1].tx !== "dipblack"){
-      const w = win(i - 1), b = PRESENT[i - 1].to;
-      if (p < b + w / 2){ base = PRESENT[i - 1]; over = PRESENT[i]; alpha = (p - (b - w / 2)) / w; }
+    if (!over && i > 0){
+      const t = txBetween(PRESENT[i - 1], PRESENT[i]), b = PRESENT[i - 1].to;
+      if (XF(t)){
+        const w = win(i - 1);
+        if (p < b + w / 2){ base = PRESENT[i - 1]; over = PRESENT[i]; alpha = (p - (b - w / 2)) / w; tx = t; }
+      } else if (t === "matchcut"){
+        /* hard cut; a 0.12-alpha white pulse decays across the MATCH span after the cut */
+        const w = MATCH * Math.min(span(i - 1), span(i));
+        if (p < b + w){ flash = 0.12 * (1 - (p - b) / w); tx = t; }
+      } else if (t === "speedramp"){
+        /* after the whip: 6 incoming frames of hard overlap — the outgoing chapter's
+           last frame double-exposes over the incoming footage, then lets go */
+        const w = (6 / Math.max(1, PRESENT[i].count - 1)) * span(i);
+        if (p < b + w){ ghost = 0.5 * (1 - (p - b) / w); tx = t; }
+      }
     }
     alpha = Math.min(1, Math.max(0, alpha));
 
-    const tx = over ? txBetween(base, over) : "dissolve";
     const tA = chapterT(base), tB = over ? chapterT(over) : 0;
     const bmA = frameAt(base, tA);
     if (bmA){
@@ -516,9 +569,18 @@ function draw(){
         else coverDraw(bmB, alpha); // dissolve; `open` also crossfades — its bars do the opening
       }
     }
+    if (ghost > 0.01 && i > 0){
+      const bmG = frameAt(PRESENT[i - 1], 1);
+      if (bmG) coverDraw(bmG, ghost);
+    }
+    if (flash > 0.001){
+      ctx.fillStyle = "rgba(255,255,255," + flash.toFixed(4) + ")";
+      ctx.fillRect(0, 0, cv.width, cv.height);
+    }
     barsPx = (barFrac(base, tA) * (1 - alpha) + (over ? barFrac(over, tB) : 0) * alpha) * cv.height;
     vig = vigOf(base) * (1 - alpha) + (over ? vigOf(over) : 0) * alpha;
-    label = base.name + (over ? " ⇢ " + over.name + " · " + tx : "");
+    label = base.name + (over ? " ⇢ " + over.name + " · " + tx
+                              : (flash || ghost > 0.01 ? " · " + tx : ""));
   }
 
   if (vig > 0.01){
