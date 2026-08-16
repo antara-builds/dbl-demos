@@ -58,17 +58,38 @@ body{background:var(--ink);color:var(--ivory);font-family:"EB Garamond",Georgia,
 #grade{position:fixed;inset:0;z-index:2;pointer-events:none;
   background:radial-gradient(75% 60% at 50% 45%, transparent 50%, rgba(2,3,8,.55) 120%)}
 
-/* ---------- film text stations ---------- */
+/* ---------- film text stations ----------
+   W60 direction pass: no station text on bare footage. A station lives on a
+   letterbox bar / title card, or carries its own scrim sized to the text block. */
 .st{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
   text-align:center;opacity:0;pointer-events:none;padding:0 8vw}
 .st .in{max-width:640px}
-.lbl{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.38em;font-size:13px;color:var(--dim)}
+/* acts I & IV — letterbox: lower third, left, overlapping the lower bar */
+.st.st-lower{align-items:flex-end;justify-content:flex-start;text-align:left;padding:0 8vw 6.5vh 7vw}
+.st.st-lower .in{max-width:420px}
+.st.st-lower .gap>*+*{margin-top:10px}
+/* act II — full bleed: side panel over a left→right scrim, always with the text */
+.st.st-side{align-items:center;justify-content:flex-start;text-align:left;padding:0}
+.st.st-side .in{max-width:340px;padding:30vh 56px 30vh 6vw;
+  background:linear-gradient(90deg,rgba(4,5,13,.78),rgba(4,5,13,0))}
+.st.st-side .gap>*+*{margin-top:10px}
+/* act III — full bleed + vignette: top third, centred, scrim sized to the block */
+.st.st-top{align-items:flex-start;justify-content:center;padding-top:9vh}
+.st.st-top .in{max-width:420px;padding:26px 34px 40px;
+  background:linear-gradient(180deg,rgba(4,5,13,.66),rgba(4,5,13,0))}
+/* act-break title cards — text on the dip-to-black, nothing else on screen */
+.st.st-card .in{max-width:560px}
+.st.st-card .card-title{font-family:"Marcellus",serif;font-variant:small-caps;
+  letter-spacing:.14em;font-size:clamp(26px,4.6vw,40px);line-height:1.25}
+.lbl{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.38em;font-size:13px;color:var(--dim);
+  text-shadow:0 2px 18px rgba(0,0,0,.85)}
 .names{font-family:"Marcellus",serif;font-size:clamp(44px,8vw,84px);letter-spacing:.06em;line-height:1.1;
   text-shadow:0 2px 30px rgba(0,0,0,.7)}
 .ital{font-style:italic;font-size:clamp(19px,3.4vw,26px);line-height:1.5;color:var(--dim);
-  text-shadow:0 2px 22px rgba(0,0,0,.7)}
+  letter-spacing:.02em;text-shadow:0 2px 18px rgba(0,0,0,.85)}
 .gap>*+*{margin-top:20px}
 .hair{width:84px;height:1px;background:var(--gold);opacity:.85;margin:0 auto}
+.st-lower .hair,.st-side .hair{margin:0}
 #hud{position:fixed;left:10px;top:10px;z-index:40;font:11px ui-monospace,monospace;color:#8a9;
   background:rgba(0,0,0,.5);padding:4px 8px;pointer-events:none;display:none}
 body.debug #hud{display:block}
@@ -152,35 +173,50 @@ body.editing .rv{opacity:1;transform:none}
     <p class="ital" id="scroll-cue">scroll — the film is the invitation</p>
   </div>
 </section>
-<section class="st" data-ch="blessing" data-w="0.08">
+<!-- W60: act framings. I "Ashirwad" letterbox/lower-third, II "The Night" side panel,
+     III "The Vows" top-third over vignette, IV "Vidaai" letterbox/lower-third.
+     In-chapter event stations are demoted to one small-caps line + one italic line;
+     the act-break title cards below carry the primary event info on black. -->
+<section class="st st-lower" data-ch="blessing" data-w="0.08">
   <div class="in gap"><p class="ital">It begins, as everything does, with a blessing</p></div>
 </section>
-<section class="st st-ev" data-ch="mehendi" data-w="0.08" data-ev-style="small" data-ev="0">
+<section class="st st-ev st-lower" data-ch="mehendi" data-w="0.08" data-ev-style="small" data-ev="0">
   <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
 </section>
-<section class="st st-ev" data-ch="haldi" data-w="0.08" data-ev-style="small" data-ev="1">
+<section class="st st-ev st-lower" data-ch="haldi" data-w="0.08" data-ev-style="small" data-ev="1">
   <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
 </section>
-<section class="st st-ev" data-ch="sangeet" data-w="0.08" data-ev-style="small" data-ev="2">
+<section class="st st-ev st-side" data-ch="sangeet" data-w="0.08" data-ev-style="small" data-ev="2">
   <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
 </section>
-<section class="st st-ev" data-ch="baraat" data-w="0.08" data-ev-style="small" data-ev="3">
+<section class="st st-ev st-side" data-ch="baraat" data-w="0.08" data-ev-style="small" data-ev="3">
   <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
 </section>
-<section class="st" data-ch="jaimala" data-w="0.06">
+<section class="st st-top" data-ch="jaimala" data-w="0.06">
   <div class="in gap"><p class="ital">The jaimala, at the gates</p></div>
 </section>
-<section class="st" data-ch="pheras" data-w="0.06">
+<section class="st st-top" data-ch="pheras" data-w="0.06">
   <div class="in gap"><p class="ital" data-bind="stPheras">Seven vows around the fire</p></div>
 </section>
-<section class="st st-ev" data-ch="feast" data-w="0.08" data-ev-style="small" data-ev="4">
+<section class="st st-ev st-lower" data-ch="feast" data-w="0.08" data-ev-style="small" data-ev="4">
   <div class="in gap"><h4 class="lbl"></h4><p class="ital"></p></div>
 </section>
-<section class="st" data-ch="firstlight" data-w="0.07">
+<section class="st st-lower" data-ch="firstlight" data-w="0.07">
   <div class="in gap">
     <p class="ital" data-bind="stFirstlight">And a new life begins — RSVP below</p>
     <p class="lbl">please reply by <span data-bind="rsvpBy">20 December 2026</span></p>
   </div>
+</section>
+
+<!-- act-break title cards — pinned to the dip-to-black spans, text on pure black -->
+<section class="st st-card" data-card="0">
+  <div class="in gap"><p class="lbl">Act II</p><h3 class="card-title"></h3><div class="hair"></div></div>
+</section>
+<section class="st st-card" data-card="1">
+  <div class="in gap"><p class="lbl">Act III</p><h3 class="card-title"></h3><div class="hair"></div></div>
+</section>
+<section class="st st-card" data-card="2">
+  <div class="in gap"><p class="lbl">Act IV</p><h3 class="card-title"></h3><div class="hair"></div></div>
 </section>
 
 <!-- ============ the harbour ============ -->
@@ -258,6 +294,11 @@ function render(){
     el.querySelector("h4").textContent = h.name;
     el.querySelector("p").textContent = h.lines + (h.phone ? "\n" + h.phone : "");
   });
+  const CARD_EVS = [{ev:2,use:"date"},{ev:3,use:"date"},{ev:4,use:"time"}];
+  document.querySelectorAll("[data-card]").forEach(el => {
+    const c = CARD_EVS[+el.dataset.card], e = c && (cfg.events||[])[c.ev]; if (!e) return;
+    el.querySelector(".card-title").textContent = e.label + " — " + e[c.use];
+  });
   $("#qa-list").innerHTML = (cfg.faqs||[]).map(f =>
     `<div class="rv"><dt>${esc(f.q)}</dt><dd>${esc(f.a)}</dd></div>`).join("");
   document.querySelectorAll("a.btn").forEach(a => a.href = cfg.rsvpUrl || "#");
@@ -268,22 +309,26 @@ render();
    present starts null; a boot probe of f_001.webp settles it. */
 const CHAPTERS = [
   /* Hemant 2026-08-16: real rasm order — jaimala happens at arrival, BEFORE the pheras;
-     dinner is served after the ceremony; the palace reveal belongs to the baraat's arrival. */
-  { name: "mist",       count: 120 },   // prologue
-  { name: "blessing",   count: 91 },
-  { name: "mehendi",    count: 91 },
-  { name: "haldi",      count: 91 },
-  { name: "sangeet",    count: 91 },
-  { name: "river",      count: 120 },  // the lantern journey to the venue
-  { name: "baraat",     count: 91 },
-  { name: "gate",       count: 91 },
-  { name: "palace",     count: 91 },
-  { name: "jaimala",    count: 91 },
-  { name: "pheras",     count: 120 },
-  { name: "feast",      count: 91 },
-  { name: "fireworks",  count: 91 },
-  { name: "vidaai",     count: 91 },
-  { name: "firstlight", count: 91 },
+     dinner is served after the ceremony; the palace reveal belongs to the baraat's arrival.
+     W60 direction pass: act = which of the four acts owns the chapter, frame = how it sits
+     on canvas (full / letterbox / open = bars animate 13vh→0 across the chapter),
+     tx = the transition at this chapter's OUTGOING boundary (dissolve / dipblack / push / open),
+     card = title-card index shown inside a dipblack's reserved black span. */
+  { name: "mist",       count: 120, act: 0, frame: "full",      tx: "dissolve" },  // prologue
+  { name: "blessing",   count: 91,  act: 1, frame: "letterbox", tx: "dissolve" },
+  { name: "mehendi",    count: 91,  act: 1, frame: "letterbox", tx: "dissolve" },
+  { name: "haldi",      count: 91,  act: 1, frame: "letterbox", tx: "dipblack", card: 0 },
+  { name: "sangeet",    count: 91,  act: 2, frame: "full",      tx: "push" },
+  { name: "river",      count: 120, act: 2, frame: "full",      tx: "push" },      // lantern journey
+  { name: "baraat",     count: 91,  act: 2, frame: "full",      tx: "dipblack", card: 1 },
+  { name: "gate",       count: 91,  act: 3, frame: "full",      tx: "dissolve" },
+  { name: "palace",     count: 91,  act: 3, frame: "full",      tx: "dissolve" },
+  { name: "jaimala",    count: 91,  act: 3, frame: "full",      tx: "dissolve" },
+  { name: "pheras",     count: 120, act: 3, frame: "full",      tx: "dipblack", card: 2 },
+  { name: "feast",      count: 91,  act: 4, frame: "full",      tx: "dissolve" },
+  { name: "fireworks",  count: 91,  act: 4, frame: "full",      tx: "dipblack" },  // dip, no card
+  { name: "vidaai",     count: 91,  act: 4, frame: "letterbox", tx: "open" },
+  { name: "firstlight", count: 91,  act: 4, frame: "open" },                        // bars open into dawn
 ];
 for (const ch of CHAPTERS){
   ch.base = "frames/" + ch.name + "/f_"; ch.pad = 3; ch.ext = ".webp";
@@ -291,6 +336,9 @@ for (const ch of CHAPTERS){
 }
 const FILM_END = 0.95;          // last frame holds 0.95 → 1.0
 const XFADE = 0.06;             // crossfade span, as a fraction of the smaller adjacent chapter
+const BAR = 0.13;               // letterbox bar height, fraction of viewport height (≈13vh)
+const CARD_GAP = 0.025;         // timeline reserved for a dip-to-black WITH a title card
+const DIP_GAP = 0.012;          // dip-to-black without a card (fireworks → vidaai)
 
 const cv = document.getElementById("film"), ctx = cv.getContext("2d");
 function fit(){ cv.width = innerWidth * Math.min(2, devicePixelRatio);
@@ -318,21 +366,47 @@ async function loadChapter(ch){
   draw(); // the frame under the needle may have just arrived
 }
 
-/* ---------- timeline: present chapters share 0 → FILM_END by frame count ---------- */
-let PRESENT = [];
+/* ---------- timeline: present chapters share 0 → FILM_END by frame count,
+   minus the black spans reserved for dipblack boundaries (title cards live there).
+   A dip span is only reserved when its two named neighbours are BOTH present and
+   adjacent in the timeline; otherwise that boundary falls back to a dissolve. ---------- */
+let PRESENT = [], GAPS = [];
+function txBetween(a, b){
+  /* the authored transition applies only between the chapters it was written for */
+  if (CHAPTERS.indexOf(b) !== CHAPTERS.indexOf(a) + 1) return "dissolve";
+  return a.tx === "dipblack" ? "dissolve" /* dips are gap segments, not blend windows */
+       : (a.tx || "dissolve");
+}
 function buildTimeline(){
   PRESENT = CHAPTERS.filter(ch => ch.present);
-  const total = PRESENT.reduce((a, ch) => a + ch.count, 0) || 1;
-  let cursor = 0;
-  for (const ch of PRESENT){
-    ch.from = cursor;
-    cursor += (ch.count / total) * FILM_END;
-    ch.to = cursor;
+  GAPS = [];
+  for (let i = 0; i < PRESENT.length - 1; i++){
+    const a = PRESENT[i], b = PRESENT[i + 1];
+    if (a.tx === "dipblack" && CHAPTERS.indexOf(b) === CHAPTERS.indexOf(a) + 1)
+      GAPS.push({ after: i, card: a.card ?? null,
+                  w: (a.card != null ? CARD_GAP : DIP_GAP) * FILM_END });
   }
+  const gapTotal = GAPS.reduce((s, g) => s + g.w, 0);
+  const total = PRESENT.reduce((a, ch) => a + ch.count, 0) || 1;
+  const span = FILM_END - gapTotal;
+  let cursor = 0;
+  PRESENT.forEach((ch, i) => {
+    ch.from = cursor;
+    cursor += (ch.count / total) * span;
+    ch.to = cursor;
+    const g = GAPS.find(g => g.after === i);
+    if (g){ g.from = cursor; cursor += g.w; g.to = cursor; }
+  });
   placeStationCentres();
 }
 function placeStationCentres(){
   for (const st of stations){
+    if (st.dataset.card != null){
+      const g = GAPS.find(g => g.card === +st.dataset.card);
+      if (g){ st.dataset.from = g.from.toFixed(4); st.dataset.to = g.to.toFixed(4); st.style.display = ""; }
+      else st.style.display = "none";
+      continue;
+    }
     const ch = CHAPTERS.find(c => c.name === st.dataset.ch);
     if (ch && ch.present){
       st.dataset.c = ((ch.from + ch.to) / 2).toFixed(4);
@@ -358,54 +432,133 @@ function frameAt(ch, t){
   return frames.get(frameUrl(ch, idx)) || null;
 }
 function chapterT(ch){ return (Math.min(p, FILM_END) - ch.from) / (ch.to - ch.from); }
-function coverDraw(bm, alpha){
+function coverDraw(bm, alpha, scale = 1, dx = 0){
   const cw = cv.width, chh = cv.height;
-  const s = Math.max(cw / bm.width, chh / bm.height);
+  const s = Math.max(cw / bm.width, chh / bm.height) * scale;
   const w = bm.width * s, h = bm.height * s;
   ctx.globalAlpha = alpha;
-  ctx.drawImage(bm, (cw - w) / 2, (chh - h) / 2, w, h);
+  ctx.drawImage(bm, (cw - w) / 2 + dx, (chh - h) / 2, w, h);
   ctx.globalAlpha = 1;
 }
+/* framing helpers — all pure functions of chapter + chapter-local t */
+function barFrac(ch, t){
+  if (!ch) return 0;
+  if (ch.frame === "letterbox") return BAR;
+  if (ch.frame === "open") return BAR * (1 - Math.min(1, Math.max(0, t))); // bars open into the dawn
+  return 0;
+}
+function vigOf(ch){ return ch && ch.act === 3 ? 1 : 0; } // act III carries the strong vignette
 function draw(){
   if (!PRESENT.length) return;
-  let i = PRESENT.findIndex(ch => p < ch.to);
-  if (i === -1) i = PRESENT.length - 1;
+  ctx.fillStyle = "#04050d"; ctx.fillRect(0, 0, cv.width, cv.height); // black ground for dips/pushes
+  let barsPx = 0, vig = 0, label = "";
 
-  /* boundary blend window centred on the join between i-1/i and i/i+1 */
-  let base = PRESENT[i], over = null, alpha = 0;
-  const win = j => XFADE * Math.min(PRESENT[j].to - PRESENT[j].from, PRESENT[j+1].to - PRESENT[j+1].from);
-  if (i + 1 < PRESENT.length){
-    const w = win(i), b = base.to;
-    if (p > b - w / 2){ over = PRESENT[i + 1]; alpha = (p - (b - w / 2)) / w; }
-  }
-  if (!over && i > 0){
-    const w = win(i - 1), b = PRESENT[i - 1].to;
-    if (p < b + w / 2){ base = PRESENT[i - 1]; over = PRESENT[i]; alpha = (p - (b - w / 2)) / w; }
-  }
-  alpha = Math.min(1, Math.max(0, alpha));
+  const gap = GAPS.find(g => p >= g.from && p < g.to);
+  if (gap){
+    /* dipblack: outgoing fades out over the first 35% of the span, black holds the middle
+       (where the title card sits at full opacity), incoming fades in over the last 35% */
+    const u = (p - gap.from) / (gap.to - gap.from);
+    if (u < 0.35){
+      const ch = PRESENT[gap.after], a = 1 - u / 0.35, bm = frameAt(ch, 1);
+      if (bm) coverDraw(bm, a);
+      barsPx = barFrac(ch, 1) * cv.height; vig = vigOf(ch) * a;
+    } else if (u > 0.65){
+      const ch = PRESENT[gap.after + 1], a = (u - 0.65) / 0.35, bm = frameAt(ch, 0);
+      if (bm) coverDraw(bm, a);
+      barsPx = barFrac(ch, 0) * cv.height; vig = vigOf(ch) * a;
+    }
+    label = "dip to black" + (gap.card != null ? " · card " + gap.card : "");
+  } else {
+    /* boundary blend window centred on the join between i-1/i and i/i+1;
+       dipblack boundaries are gap segments above, so no blend window there */
+    let i = PRESENT.findIndex(ch => p < ch.to);
+    if (i === -1) i = PRESENT.length - 1;
+    let base = PRESENT[i], over = null, alpha = 0;
+    const win = j => XFADE * Math.min(PRESENT[j].to - PRESENT[j].from, PRESENT[j+1].to - PRESENT[j+1].from);
+    if (i + 1 < PRESENT.length && base.tx !== "dipblack"){
+      const w = win(i), b = base.to;
+      if (p > b - w / 2){ over = PRESENT[i + 1]; alpha = (p - (b - w / 2)) / w; }
+    }
+    if (!over && i > 0 && PRESENT[i - 1].tx !== "dipblack"){
+      const w = win(i - 1), b = PRESENT[i - 1].to;
+      if (p < b + w / 2){ base = PRESENT[i - 1]; over = PRESENT[i]; alpha = (p - (b - w / 2)) / w; }
+    }
+    alpha = Math.min(1, Math.max(0, alpha));
 
-  const bmA = frameAt(base, chapterT(base));
-  if (bmA) coverDraw(bmA, 1);
-  if (over && alpha > 0){
-    const bmB = frameAt(over, chapterT(over));
-    if (bmB) coverDraw(bmB, alpha);
+    const tx = over ? txBetween(base, over) : "dissolve";
+    const tA = chapterT(base), tB = over ? chapterT(over) : 0;
+    const bmA = frameAt(base, tA);
+    if (bmA){
+      if (tx === "push" && over && alpha > 0)
+        /* outgoing frame recedes: 1.00 → 0.96 with a 40px leftward drift */
+        coverDraw(bmA, 1 - alpha * alpha, 1 - 0.04 * alpha, -40 * alpha * (cv.width / innerWidth));
+      else coverDraw(bmA, 1);
+    }
+    if (over && alpha > 0){
+      const bmB = frameAt(over, tB);
+      if (bmB){
+        if (tx === "push") coverDraw(bmB, alpha, 1.06 - 0.06 * alpha); // incoming 1.06 → 1.00
+        else coverDraw(bmB, alpha); // dissolve; `open` also crossfades — its bars do the opening
+      }
+    }
+    barsPx = (barFrac(base, tA) * (1 - alpha) + (over ? barFrac(over, tB) : 0) * alpha) * cv.height;
+    vig = vigOf(base) * (1 - alpha) + (over ? vigOf(over) : 0) * alpha;
+    label = base.name + (over ? " ⇢ " + over.name + " · " + tx : "");
   }
-  hud.textContent = `p ${p.toFixed(3)} · ${base.name}${over ? " ⇢ " + over.name : ""} · loaded ${loaded}`;
+
+  if (vig > 0.01){
+    const g = ctx.createRadialGradient(cv.width / 2, cv.height * 0.45, Math.min(cv.width, cv.height) * 0.3,
+                                       cv.width / 2, cv.height * 0.45, Math.max(cv.width, cv.height) * 0.75);
+    g.addColorStop(0, "rgba(0,0,0,0)");
+    g.addColorStop(1, "rgba(0,0,0," + (0.55 * vig).toFixed(3) + ")");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, cv.width, cv.height);
+  }
+  if (barsPx > 0.5){
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, cv.width, barsPx);
+    ctx.fillRect(0, cv.height - barsPx, cv.width, barsPx);
+  }
+  hud.textContent = `p ${p.toFixed(3)} · ${label} · loaded ${loaded}`;
 }
 
 /* ---------- stations (fade in/out at chapter centres) ---------- */
 const stations = [...document.querySelectorAll(".st")];
 function placeStations(){
   for (const st of stations){
-    if (st.style.display === "none" || !st.dataset.c) continue;
+    if (st.style.display === "none") continue;
+    if (st.dataset.card != null){
+      /* title cards are pinned to their dip-to-black span: full opacity through
+         the middle 60%, ramping over the outer 20% at each end */
+      if (!st.dataset.from) continue;
+      const f = +st.dataset.from, t = +st.dataset.to;
+      const u = t > f ? (p - f) / (t - f) : -1;
+      let v = (u <= 0 || u >= 1) ? 0 : Math.min(1, Math.min(u, 1 - u) / 0.2);
+      v = v * v * (3 - 2 * v);
+      st.style.opacity = v;
+      st.style.transform = "none";
+      continue;
+    }
+    if (!st.dataset.c) continue;
     const c = +st.dataset.c, w = +st.dataset.w;
     /* the hero owns the top of the page: fully visible from p=0, fades on scroll-away */
     const d = st.id === "hero" ? Math.max(0, p - c) : Math.abs(p - c);
     let v = Math.max(0, 1 - d / (w / 2));
     v = v * v * (3 - 2 * v);
-    st.style.opacity = v;
+    st.__v = v;
     st.style.pointerEvents = v > 0.5 ? "auto" : "none";
     st.style.transform = `translateY(${(p - c) * -140}px)`;
+  }
+  /* one voice at a time: only the strongest chapter station speaks (title cards exempt) —
+     two lower-thirds overlapping at a boundary was unreadable */
+  let top = null;
+  for (const st of stations){
+    if (st.dataset.card != null || st.__v == null) continue;
+    if (!top || st.__v > top.__v) top = st;
+  }
+  for (const st of stations){
+    if (st.dataset.card != null || st.__v == null) continue;
+    st.style.opacity = st === top ? st.__v : 0;
+    st.__v = null;
   }
 }
 
