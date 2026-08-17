@@ -41,11 +41,16 @@ body.opened .env-mono{opacity:0}
   font-size:clamp(38px,7vw,64px);font-variant-numeric:tabular-nums;line-height:1.1}
 .count span{font-family:"Marcellus",serif;text-transform:uppercase;letter-spacing:.3em;
   font-size:clamp(9px,1.4vw,13px);color:#6B6555}
-#reveal,#signoff{display:none}
-body.opened #reveal,body.opened #signoff{display:flex}
-body.opened .cream{display:block}
-footer{background:#FFFDF4;color:#8A8271;text-align:center;padding:0 0 40px;font-size:13px;display:none}
-body.opened footer{display:block}
+/* screen swap, exactly like the original: the lock screen IS the site until you open,
+   then the content replaces it at the top of the page */
+#reveal,#signoff,footer{display:none}
+body.revealed #reveal{display:flex}
+body.revealed #signoff{display:block}
+body.revealed footer{display:block}
+body.revealed #lock{display:none}
+#lock{transition:opacity .6s ease}
+body.leaving #lock{opacity:0}
+footer{background:#FFFDF4;color:#8A8271;text-align:center;padding:0 0 40px;font-size:13px}
 </style>
 </head>
 <body>
@@ -55,7 +60,7 @@ body.opened footer{display:block}
   <div class="in">
     <p class="caps">You've got mail from</p>
     <p class="script" style="margin-top:22px">Isabella &amp; Thomas</p>
-    <button class="env-wrap" onclick="document.body.classList.add('opened');setTimeout(()=>document.getElementById('reveal').scrollIntoView({behavior:'smooth'}),900)" aria-label="Open the envelope">
+    <button class="env-wrap" onclick="openEnvelope()" aria-label="Open the envelope">
       <img class="closed-state" src="envelope_closed.png" alt="">
       <img class="open-state" src="envelope_open.png" alt="">
       <span class="env-mono">It</span>
@@ -75,7 +80,7 @@ body.opened footer{display:block}
   </div>
 </section>
 
-<section class="cream" id="signoff" style="display:none">
+<section class="cream" id="signoff">
   <div class="in">
     <p class="mono">IT</p>
     <p class="ital">For any questions, please contact us at:<br>isabellathomaswedding@example.com</p>
@@ -92,6 +97,13 @@ body.opened footer{display:block}
 <footer>Template demo — DesignedByLJ Studio</footer>
 
 <script>
+function openEnvelope(){
+  const b = document.body;
+  if (b.classList.contains("revealed")) return;
+  b.classList.add("opened");                    // flap lifts, card slides out
+  setTimeout(() => b.classList.add("leaving"), 1000);   // lock screen fades
+  setTimeout(() => { b.classList.add("revealed"); window.scrollTo(0,0); }, 1650);
+}
 const T = new Date("2027-07-22T15:00:00").getTime();
 function tick(){
   const d = Math.max(0, T - Date.now());
@@ -99,7 +111,6 @@ function tick(){
   document.querySelectorAll("#count b").forEach((el,i)=>el.textContent=String(v[i]).padStart(2,"0"));
 }
 tick(); setInterval(tick, 30e3);
-document.getElementById("signoff").style.display = "";
 </script>
 </body>
 </html>
