@@ -377,6 +377,14 @@ const XFADE = 0.06;             // crossfade span, as a fraction of the smaller 
    LOWMEM (small screen OR <=4GB device) turns on 640px decodes + chapter eviction. */
 const MOBILE = matchMedia("(max-width:768px)");
 const LOWMEM = () => MOBILE.matches || (navigator.deviceMemory != null && navigator.deviceMemory <= 4);
+/* mobile-first payload budget (DIRECTION.md §7): phones stream the dedicated frames_m/ set
+   (576px · 10fps · ~15MB total) instead of the 960px desktop film (~50MB). */
+if (MOBILE.matches){
+  for (const ch of CHAPTERS){
+    ch.base = "frames_m/" + ch.name + "/f_";
+    ch.count = (ch.name === "mist" || ch.name === "river" || ch.name === "pheras") ? 80 : 60;
+  }
+}
 let BAR = MOBILE.matches ? 0.09 : 0.13; // letterbox bar height, fraction of viewport height
 MOBILE.addEventListener?.("change", () => { BAR = MOBILE.matches ? 0.09 : 0.13; draw(); });
 const CARD_GAP = 0.025;         // timeline reserved for a dip-to-black WITH a title card
