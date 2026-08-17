@@ -52,7 +52,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--ink:#04050d;--ivory:#F2EBDD;--dim:#B9B2A2;--gold:#C98A2B;--gold2:#E0B15F}
-body{background:var(--ink);color:var(--ivory);font-family:"EB Garamond",Georgia,serif;overflow-x:hidden}
+body{background:var(--ink);color:var(--ivory);font-family:"EB Garamond",Georgia,serif;overflow-x:hidden;
+  touch-action:pan-y} /* the page scrubs by scrolling only — never trap a phone's vertical pan */
 #track{height:3400vh} /* ~2 viewports of scroll per shot — the film breathes at real scroll speed */
 #film{position:fixed;inset:0;z-index:1;width:100%;height:100%;object-fit:cover}
 #grade{position:fixed;inset:0;z-index:2;pointer-events:none;
@@ -150,6 +151,28 @@ body.editing #film,body.editing #track,body.editing #grade{display:none}
 body.editing .st{position:static;opacity:1;pointer-events:auto;padding:60px 8vw;transform:none!important;display:flex!important}
 body.editing .rv{opacity:1;transform:none}
 @media(min-width:900px){body.editing .st,body.editing #harbour{margin-right:430px}}
+
+/* ---------- mobile (W62) ----------
+   One page serves both. Portrait pacing is shorter (a thumb-swipe covers more of the
+   timeline than a wheel notch), bars are shallower, and act II's 340px side panel —
+   which would eat a phone — becomes a lower-third like acts I & IV. All clamp() type
+   already scales; nothing else is reworked. */
+@media(max-width:768px){
+  #track{height:2000vh}
+  .st.st-side{align-items:flex-end;justify-content:flex-start;text-align:left;
+    padding:0 8vw 6.5vh 7vw}
+  /* the lower-third still needs its scrim — st-side's left→right gradient is replaced
+     with the same bottom-up gradient the letterbox acts use */
+  .st.st-side .in{max-width:420px;padding:18px 20px 14px;margin-left:-20px;
+    background:linear-gradient(0deg,rgba(4,5,13,.72),rgba(4,5,13,0))}
+  /* hero cue: phones swipe, mice scroll */
+  #scroll-cue .cue-desk{display:none}
+  #scroll-cue .cue-mob{display:inline}
+}
+@media(min-width:769px){
+  #scroll-cue .cue-desk{display:inline}
+  #scroll-cue .cue-mob{display:none}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -170,7 +193,7 @@ body.editing .rv{opacity:1;transform:none}
     <h1 class="names" data-bind="names">Elena &amp; Rohan</h1>
     <div class="hair"></div>
     <p class="lbl"><span data-bind="dateLine">14 February 2027</span> · <span data-bind="city">Udaipur</span></p>
-    <p class="ital" id="scroll-cue">scroll — the film is the invitation</p>
+    <p class="ital" id="scroll-cue"><span class="cue-desk">scroll</span><span class="cue-mob">swipe</span> — the film is the invitation</p>
   </div>
 </section>
 <!-- W60: act framings. I "Ashirwad" letterbox/lower-third, II "The Night" side panel,
@@ -315,27 +338,30 @@ const CHAPTERS = [
      tx = the transition at this chapter's OUTGOING boundary
           (dissolve / dipblack / push / open / matchcut / speedramp — DIRECTION.md §2),
      card = title-card index shown inside a dipblack's reserved black span,
+     fx/fy = portrait focus point (0..1, default 0.5/0.5): where the cover-fit crop centres
+          when a portrait phone can only show a slice of the 16:9 frame — set from the shot
+          (diya low-centre, hands upper, horizon high), not from taste,
      beat = "<parent>": a sub-chapter (DIRECTION.md §1). It inherits the parent's act framing,
           has no station of its own (the parent's caption covers the sequence), and joins its
           parent with a dissolve unless the parent's tx says otherwise. While a beat's frames
           are not on disk, the beat sits out and its OUTGOING tx governs the parent's boundary,
           so the authored grammar holds either way. */
   { name: "mist",       count: 120, act: 0, frame: "full",      tx: "dissolve" },  // prologue
-  { name: "blessing",   count: 91,  act: 1, frame: "letterbox", tx: "matchcut" },  // flame → henna spiral
-  { name: "mehendi",    count: 91,  act: 1, frame: "letterbox", tx: "dissolve" },
+  { name: "blessing",   count: 91,  act: 1, frame: "letterbox", tx: "matchcut", fy: 0.55 }, // diya low-centre; flame → henna spiral
+  { name: "mehendi",    count: 91,  act: 1, frame: "letterbox", tx: "dissolve", fx: 0.45 }, // cone hand left of centre
   { name: "haldi",      count: 91,  act: 1, frame: "letterbox", tx: "dipblack", card: 0 },
   { name: "sangeet",    count: 91,  act: 2, frame: "full",      tx: "speedramp" }, // whip into the river
   { name: "river",      count: 120, act: 2, frame: "full",      tx: "push" },      // lantern journey
   { name: "baraat",     count: 91,  act: 2, frame: "full",      tx: "dipblack", card: 1 },
   { name: "gate",       count: 91,  act: 3, frame: "full",      tx: "push" },
   { name: "palace",     count: 91,  act: 3, frame: "full",      tx: "dissolve" },
-  { name: "jaimala",    count: 91,  act: 3, frame: "full",      tx: "matchcut" },  // garland → fire circle
-  { name: "pheras",     count: 120, act: 3, frame: "full",      tx: "dissolve" },  // joins its beat
+  { name: "jaimala",    count: 91,  act: 3, frame: "full",      tx: "matchcut", fx: 0.55, fy: 0.4 }, // hands upper; garland → fire circle
+  { name: "pheras",     count: 120, act: 3, frame: "full",      tx: "dissolve", fy: 0.5 },  // mandala centre; joins its beat
   { name: "pherasfire", count: 91,  beat: "pheras",             tx: "dipblack", card: 2 }, // fire closeup — frames land later
   { name: "feast",      count: 91,  act: 4, frame: "full",      tx: "dissolve" },
   { name: "fireworks",  count: 91,  act: 4, frame: "full",      tx: "dipblack" },  // dip, no card
-  { name: "vidaai",     count: 91,  act: 4, frame: "letterbox", tx: "open" },
-  { name: "firstlight", count: 91,  act: 4, frame: "open" },                        // bars open into dawn
+  { name: "vidaai",     count: 91,  act: 4, frame: "letterbox", tx: "open", fx: 0.5, fy: 0.45 },
+  { name: "firstlight", count: 91,  act: 4, frame: "open", fy: 0.35 },              // horizon high; bars open into dawn
 ];
 for (const ch of CHAPTERS){
   ch.base = "frames/" + ch.name + "/f_"; ch.pad = 3; ch.ext = ".webp";
@@ -347,7 +373,12 @@ for (const ch of CHAPTERS){
 }
 const FILM_END = 0.95;          // last frame holds 0.95 → 1.0
 const XFADE = 0.06;             // crossfade span, as a fraction of the smaller adjacent chapter
-const BAR = 0.13;               // letterbox bar height, fraction of viewport height (≈13vh)
+/* W62 mobile: one page serves both. MOBILE tracks the same 768px breakpoint as the CSS;
+   LOWMEM (small screen OR <=4GB device) turns on 640px decodes + chapter eviction. */
+const MOBILE = matchMedia("(max-width:768px)");
+const LOWMEM = () => MOBILE.matches || (navigator.deviceMemory != null && navigator.deviceMemory <= 4);
+let BAR = MOBILE.matches ? 0.09 : 0.13; // letterbox bar height, fraction of viewport height
+MOBILE.addEventListener?.("change", () => { BAR = MOBILE.matches ? 0.09 : 0.13; draw(); });
 const CARD_GAP = 0.025;         // timeline reserved for a dip-to-black WITH a title card
 const DIP_GAP = 0.012;          // dip-to-black without a card (fireworks → vidaai)
 const MATCH = 0.015;            // matchcut flash-dissolve span, fraction of the smaller neighbour
@@ -357,10 +388,19 @@ function fit(){ cv.width = innerWidth * Math.min(2, devicePixelRatio);
   cv.height = innerHeight * Math.min(2, devicePixelRatio); }
 addEventListener("resize", () => { fit(); draw(); }); fit();
 
-/* ---------- frame store: decode once, keep bitmaps ---------- */
+/* ---------- frame store: decode once, keep bitmaps ----------
+   W62: on LOWMEM devices frames decode at 640px wide (the phone never shows more) and
+   only a sliding window of chapters stays decoded — iOS kills tabs that hold ~1500
+   full-size bitmaps. Desktop keeps the original behaviour: full decode, full film. */
 const frames = new Map();
 let loaded = 0;
 function frameUrl(ch, i){ return ch.base + String(i + 1).padStart(ch.pad, "0") + ch.ext; }
+function decode(b){
+  if (!LOWMEM()) return createImageBitmap(b);
+  /* resize options are widely but not universally supported — fall back to a full decode */
+  return createImageBitmap(b, { resizeWidth: 640, resizeQuality: "medium" })
+    .catch(() => createImageBitmap(b));
+}
 async function loadChapter(ch){
   if (!ch.present || ch.load) return;
   ch.load = 1;
@@ -368,14 +408,50 @@ async function loadChapter(ch){
   for (let i = 0; i < ch.count; i++){
     jobs.push(fetch(frameUrl(ch, i))
       .then(r => { if (!r.ok) throw 0; return r.blob(); })
-      .then(b => createImageBitmap(b))
-      .then(bm => { frames.set(frameUrl(ch, i), bm); loaded++; })
+      .then(decode)
+      .then(bm => { const u = frameUrl(ch, i);
+        const old = frames.get(u); if (old){ old.close?.(); loaded--; } // boot's early first-frame decode
+        frames.set(u, bm); loaded++; })
       .catch(() => {}));
     if (jobs.length % 8 === 0){ await Promise.race(jobs.slice(-8)); }
   }
   await Promise.all(jobs);
   ch.load = 2;
   draw(); // the frame under the needle may have just arrived
+}
+
+/* ---------- W62 eviction window (LOWMEM only) ----------
+   Keep decoded bitmaps for the chapter nearest the needle ±2 PRESENT chapters
+   (a present beat only earns ±1 — beats are short and cluster around their parent).
+   The chapter under the needle and its crossfade partners are inside the window by
+   construction (partners are the adjacent present chapters), so eviction can never
+   touch what draw() is compositing. Evicted chapters close() their bitmaps and reset
+   to load=0 so streamAll() can bring them back as p moves. */
+function needleIndex(){
+  const i = PRESENT.findIndex(ch => p < ch.to);
+  return i === -1 ? PRESENT.length - 1 : i;
+}
+function keepSet(){
+  const at = needleIndex(), keep = new Set();
+  for (let k = 0; k < PRESENT.length; k++){
+    const r = PRESENT[k].beat ? 1 : 2;
+    if (k >= at - r && k <= at + r) keep.add(PRESENT[k]);
+  }
+  /* the needle chapter and both immediate neighbours (crossfade partners) always stay */
+  for (const k of [at - 1, at, at + 1]) if (PRESENT[k]) keep.add(PRESENT[k]);
+  return keep;
+}
+function evict(){
+  if (!LOWMEM()) return;
+  const keep = keepSet();
+  for (const ch of PRESENT){
+    if (keep.has(ch) || ch.load !== 2) continue; // never mid-load; the window governs loads
+    for (let i = 0; i < ch.count; i++){
+      const u = frameUrl(ch, i), bm = frames.get(u);
+      if (bm){ bm.close?.(); frames.delete(u); loaded--; }
+    }
+    ch.load = 0;
+  }
 }
 
 /* ---------- timeline: present chapters share 0 → FILM_END by frame count,
@@ -451,15 +527,21 @@ function placeStationCentres(){
 function ensureAhead(){
   const i = PRESENT.findIndex(ch => p < ch.to);
   const at = i === -1 ? PRESENT.length - 1 : i;
-  for (let k = at; k < Math.min(PRESENT.length, at + 3); k++) loadChapter(PRESENT[k]);
+  const keep = LOWMEM() ? keepSet() : null; // don't load what eviction would reclaim
+  for (let k = at; k < Math.min(PRESENT.length, at + 3); k++)
+    if (!keep || keep.has(PRESENT[k])) loadChapter(PRESENT[k]);
 }
 /* the whole film streams in behind the first paint — a fast scroller must never
    outrun the loader into black. Nearest-to-the-needle chapters load first. */
 let streaming = false;
 async function streamAll(){
   if (streaming) return; streaming = true;
-  while (PRESENT.some(ch => ch.load !== 2)){
-    const next = PRESENT.filter(ch => !ch.load)
+  /* desktop: run until the whole film is cached. LOWMEM: never exit — fill the eviction
+     window, idle, and refill as the needle moves (evicted chapters reset to load=0). */
+  while (LOWMEM() || PRESENT.some(ch => ch.load !== 2)){
+    evict();
+    const pool = LOWMEM() ? PRESENT.filter(ch => keepSet().has(ch)) : PRESENT;
+    const next = pool.filter(ch => !ch.load)
       .sort((a, b) => Math.abs((a.from + a.to) / 2 - p) - Math.abs((b.from + b.to) / 2 - p))[0];
     if (!next){ await new Promise(r => setTimeout(r, 250)); continue; }
     await loadChapter(next);
@@ -481,13 +563,23 @@ function frameAt(ch, t){
   return frames.get(frameUrl(ch, idx)) || null;
 }
 function chapterT(ch){ return (Math.min(p, FILM_END) - ch.from) / (ch.to - ch.from); }
-function coverDraw(bm, alpha, scale = 1, dx = 0){
+function coverDraw(bm, alpha, scale = 1, dx = 0, fx = 0.5, fy = 0.5){
+  /* cover-fit biased toward the shot's focus point: (fx,fy) in source space lands as
+     close to canvas centre as the overflow allows, clamped so no edge ever shows.
+     fx=fy=0.5 is the old centred crop — landscape windows barely move; a portrait
+     phone's tall crop is where fy earns its keep. */
   const cw = cv.width, chh = cv.height;
   const s = Math.max(cw / bm.width, chh / bm.height) * scale;
   const w = bm.width * s, h = bm.height * s;
+  const x = Math.max(cw - w, Math.min(0, cw / 2 - fx * w));
+  const y = Math.max(chh - h, Math.min(0, chh / 2 - fy * h));
   ctx.globalAlpha = alpha;
-  ctx.drawImage(bm, (cw - w) / 2 + dx, (chh - h) / 2, w, h);
+  ctx.drawImage(bm, x + dx, y, w, h);
   ctx.globalAlpha = 1;
+}
+/* chapter-aware wrapper — every film frame draws through this so fx/fy always apply */
+function chDraw(ch, bm, alpha, scale = 1, dx = 0){
+  coverDraw(bm, alpha, scale, dx, ch.fx ?? 0.5, ch.fy ?? 0.5);
 }
 /* framing helpers — all pure functions of chapter + chapter-local t */
 function barFrac(ch, t){
@@ -509,11 +601,11 @@ function draw(){
     const u = (p - gap.from) / (gap.to - gap.from);
     if (u < 0.35){
       const ch = PRESENT[gap.after], a = 1 - u / 0.35, bm = frameAt(ch, 1);
-      if (bm) coverDraw(bm, a);
+      if (bm) chDraw(ch, bm, a);
       barsPx = barFrac(ch, 1) * cv.height; vig = vigOf(ch) * a;
     } else if (u > 0.65){
       const ch = PRESENT[gap.after + 1], a = (u - 0.65) / 0.35, bm = frameAt(ch, 0);
-      if (bm) coverDraw(bm, a);
+      if (bm) chDraw(ch, bm, a);
       barsPx = barFrac(ch, 0) * cv.height; vig = vigOf(ch) * a;
     }
     label = "dip to black" + (gap.card != null ? " · card " + gap.card : "");
@@ -559,19 +651,19 @@ function draw(){
     if (bmA){
       if (tx === "push" && over && alpha > 0)
         /* outgoing frame recedes: 1.00 → 0.96 with a 40px leftward drift */
-        coverDraw(bmA, 1 - alpha * alpha, 1 - 0.04 * alpha, -40 * alpha * (cv.width / innerWidth));
-      else coverDraw(bmA, 1);
+        chDraw(base, bmA, 1 - alpha * alpha, 1 - 0.04 * alpha, -40 * alpha * (cv.width / innerWidth));
+      else chDraw(base, bmA, 1);
     }
     if (over && alpha > 0){
       const bmB = frameAt(over, tB);
       if (bmB){
-        if (tx === "push") coverDraw(bmB, alpha, 1.06 - 0.06 * alpha); // incoming 1.06 → 1.00
-        else coverDraw(bmB, alpha); // dissolve; `open` also crossfades — its bars do the opening
+        if (tx === "push") chDraw(over, bmB, alpha, 1.06 - 0.06 * alpha); // incoming 1.06 → 1.00
+        else chDraw(over, bmB, alpha); // dissolve; `open` also crossfades — its bars do the opening
       }
     }
     if (ghost > 0.01 && i > 0){
       const bmG = frameAt(PRESENT[i - 1], 1);
-      if (bmG) coverDraw(bmG, ghost);
+      if (bmG) chDraw(PRESENT[i - 1], bmG, ghost);
     }
     if (flash > 0.001){
       ctx.fillStyle = "rgba(255,255,255," + flash.toFixed(4) + ")";
@@ -675,7 +767,7 @@ async function boot(){
   if (PRESENT.length){
     const first = PRESENT[0];
     /* paint the very first frame the moment it decodes — no blank opening screen */
-    fetch(frameUrl(first, 0)).then(r => r.blob()).then(b => createImageBitmap(b))
+    fetch(frameUrl(first, 0)).then(r => r.blob()).then(decode)
       .then(bm => { frames.set(frameUrl(first, 0), bm); draw(); }).catch(() => {});
     await loadChapter(first);         // only the opening chapter blocks full playback
     streamAll();                      // then the ENTIRE film streams in, nearest-first
